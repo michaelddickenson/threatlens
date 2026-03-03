@@ -1,13 +1,35 @@
 import { useParams, Link } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import apt29 from '../data/apt/apt29'
+import apt41 from '../data/apt/apt41'
 
-const allAPTs = { apt29 }
+const allAPTs = { apt29, apt41 }
+
+const PHASE_STYLES = {
+  'Initial Access':       { idle: 'border-yellow-800 text-yellow-400 bg-yellow-950/30 hover:bg-yellow-900/40',   active: 'border-yellow-400 text-yellow-200 bg-yellow-900/50' },
+  'Execution':            { idle: 'border-orange-800 text-orange-400 bg-orange-950/30 hover:bg-orange-900/40',   active: 'border-orange-400 text-orange-200 bg-orange-900/50' },
+  'Command & Control':    { idle: 'border-orange-800 text-orange-400 bg-orange-950/30 hover:bg-orange-900/40',   active: 'border-orange-400 text-orange-200 bg-orange-900/50' },
+  'Privilege Escalation': { idle: 'border-red-800 text-red-400 bg-red-950/30 hover:bg-red-900/40',               active: 'border-red-400 text-red-200 bg-red-900/50' },
+  'Lateral Movement':     { idle: 'border-purple-800 text-purple-400 bg-purple-950/30 hover:bg-purple-900/40',   active: 'border-purple-400 text-purple-200 bg-purple-900/50' },
+  'Persistence':          { idle: 'border-blue-800 text-blue-400 bg-blue-950/30 hover:bg-blue-900/40',           active: 'border-blue-400 text-blue-200 bg-blue-900/50' },
+  'Exfiltration':         { idle: 'border-teal-800 text-teal-400 bg-teal-950/30 hover:bg-teal-900/40',           active: 'border-teal-400 text-teal-200 bg-teal-900/50' },
+}
+const FALLBACK_STYLE = { idle: 'border-gray-700 text-gray-400 bg-gray-800/30 hover:bg-gray-700/40', active: 'border-green-400 text-green-200 bg-green-900/50' }
+
+const LEGEND = [
+  { phase: 'Initial Access',       dot: 'bg-yellow-400' },
+  { phase: 'Execution / C2',       dot: 'bg-orange-400' },
+  { phase: 'Privilege Escalation', dot: 'bg-red-400' },
+  { phase: 'Lateral Movement',     dot: 'bg-purple-400' },
+  { phase: 'Persistence',          dot: 'bg-blue-400' },
+  { phase: 'Exfiltration',         dot: 'bg-teal-400' },
+]
 
 export default function Campaign() {
   const { aptId, campaignId } = useParams()
   const [view, setView] = useState('attacker')
   const [activeStage, setActiveStage] = useState(0)
+  const stageDetailRef = useRef(null)
 
   const apt = allAPTs[aptId]
   const campaign = apt?.campaigns.find(c => c.id === campaignId)
@@ -21,6 +43,11 @@ export default function Campaign() {
   }
 
   const stage = campaign.stages[activeStage]
+
+  function jumpToStage(i) {
+    setActiveStage(i)
+    stageDetailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10 font-mono">
@@ -97,7 +124,7 @@ export default function Campaign() {
         </div>
 
         {/* Stage Detail */}
-        <div className="lg:col-span-3 border border-gray-800 bg-gray-900 rounded-lg p-6">
+        <div ref={stageDetailRef} className="lg:col-span-3 border border-gray-800 bg-gray-900 rounded-lg p-6">
 
           {/* TTP Badge */}
           <div className="flex flex-wrap items-center gap-3 mb-6">
@@ -168,6 +195,43 @@ export default function Campaign() {
           )}
         </div>
       </div>
+
+      {/* MITRE ATT&CK TTP Navigator Panel */}
+      <div className="mt-8 border border-gray-800 bg-gray-900 rounded-lg p-6">
+        <div className="flex flex-wrap items-start justify-between gap-4 mb-5">
+          <div>
+            <p className="text-xs text-gray-600 uppercase tracking-widest mb-1">// mitre att&ck coverage</p>
+            <h3 className="text-sm font-bold text-white tracking-widest">TECHNIQUES USED IN THIS CAMPAIGN</h3>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            {LEGEND.map(({ phase, dot }) => (
+              <div key={phase} className="flex items-center gap-1.5 text-xs text-gray-500">
+                <span className={`w-2 h-2 rounded-full ${dot}`} />
+                {phase}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          {campaign.stages.map((s, i) => {
+            const styles = PHASE_STYLES[s.phase] ?? FALLBACK_STYLE
+            const isActive = activeStage === i
+            return (
+              <button
+                key={s.id}
+                onClick={() => jumpToStage(i)}
+                className={`text-left px-4 py-3 rounded border text-xs transition-colors ${isActive ? styles.active : styles.idle}`}
+              >
+                <div className="font-bold tracking-wide">{s.ttp}</div>
+                <div className="mt-0.5 opacity-80">{s.ttpName}</div>
+                <div className="mt-1 opacity-50 text-xs">{s.phase}</div>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
     </div>
   )
 }
