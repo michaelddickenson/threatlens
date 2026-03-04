@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import apt29 from '../data/apt/apt29'
 import apt41 from '../data/apt/apt41'
+import lazarus from '../data/apt/lazarus'
 
-const allAPTs = [apt29, apt41]
+const allAPTs = [apt29, apt41, lazarus]
 
 const totalCampaigns = allAPTs.reduce((sum, apt) => sum + apt.campaigns.length, 0)
 const totalTechniques = allAPTs.reduce((sum, apt) =>

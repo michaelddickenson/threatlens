@@ -2,8 +2,9 @@ import { useParams, Link } from 'react-router-dom'
 import { useState, useRef } from 'react'
 import apt29 from '../data/apt/apt29'
 import apt41 from '../data/apt/apt41'
+import lazarus from '../data/apt/lazarus'
 
-const allAPTs = { apt29, apt41 }
+const allAPTs = { apt29, apt41, lazarus }
 
 const PHASE_STYLES = {
   'Initial Access':       { idle: 'border-yellow-800 text-yellow-400 bg-yellow-950/30 hover:bg-yellow-900/40',   active: 'border-yellow-400 text-yellow-200 bg-yellow-900/50' },
@@ -12,6 +13,7 @@ const PHASE_STYLES = {
   'Privilege Escalation': { idle: 'border-red-800 text-red-400 bg-red-950/30 hover:bg-red-900/40',               active: 'border-red-400 text-red-200 bg-red-900/50' },
   'Lateral Movement':     { idle: 'border-purple-800 text-purple-400 bg-purple-950/30 hover:bg-purple-900/40',   active: 'border-purple-400 text-purple-200 bg-purple-900/50' },
   'Persistence':          { idle: 'border-blue-800 text-blue-400 bg-blue-950/30 hover:bg-blue-900/40',           active: 'border-blue-400 text-blue-200 bg-blue-900/50' },
+  'Defense Evasion':      { idle: 'border-emerald-800 text-emerald-400 bg-emerald-950/30 hover:bg-emerald-900/40', active: 'border-emerald-400 text-emerald-200 bg-emerald-900/50' },
   'Exfiltration':         { idle: 'border-teal-800 text-teal-400 bg-teal-950/30 hover:bg-teal-900/40',           active: 'border-teal-400 text-teal-200 bg-teal-900/50' },
 }
 const FALLBACK_STYLE = { idle: 'border-gray-700 text-gray-400 bg-gray-800/30 hover:bg-gray-700/40', active: 'border-green-400 text-green-200 bg-green-900/50' }
@@ -22,6 +24,7 @@ const LEGEND = [
   { phase: 'Privilege Escalation', dot: 'bg-red-400' },
   { phase: 'Lateral Movement',     dot: 'bg-purple-400' },
   { phase: 'Persistence',          dot: 'bg-blue-400' },
+  { phase: 'Defense Evasion',      dot: 'bg-emerald-400' },
   { phase: 'Exfiltration',         dot: 'bg-teal-400' },
 ]
 
@@ -101,7 +104,52 @@ export default function Campaign() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      {/* Kill Chain Timeline */}
+      <div className="border border-gray-800 bg-gray-900/50 rounded-lg px-6 py-4 mb-6">
+        <p className="text-xs text-gray-600 uppercase tracking-widest mb-4">Kill Chain Progression</p>
+        <div className="overflow-x-auto pb-1">
+          <div className="flex items-center min-w-max">
+            {campaign.stages.map((s, i) => {
+              const styles = PHASE_STYLES[s.phase] ?? FALLBACK_STYLE
+              const isActive = activeStage === i
+              return (
+                <div key={s.id} className="flex items-center">
+                  <button
+                    onClick={() => jumpToStage(i)}
+                    className={`flex flex-col items-center text-center px-4 py-3 rounded border transition-all w-32 ${
+                      isActive
+                        ? 'border-green-400 bg-green-950'
+                        : styles.idle
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm mb-2 border transition-colors ${
+                      isActive
+                        ? 'bg-green-400 border-green-400 text-gray-950'
+                        : 'bg-gray-800 border-gray-700 text-gray-400'
+                    }`}>
+                      {i + 1}
+                    </div>
+                    <div className={`text-xs font-bold leading-tight mb-1 ${isActive ? 'text-green-300' : ''}`}>
+                      {s.name}
+                    </div>
+                    <div className="text-xs font-mono opacity-50">{s.ttp}</div>
+                  </button>
+
+                  {i < campaign.stages.length - 1 && (
+                    <div className="flex items-center mx-2 shrink-0">
+                      <div className="w-6 h-px bg-gray-700" />
+                      <span className="text-gray-600 text-sm">›</span>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Stage Navigator + Detail */}
+      <div ref={stageDetailRef} className="grid grid-cols-1 lg:grid-cols-4 gap-6">
 
         {/* Stage Navigator */}
         <div className="lg:col-span-1 space-y-2">
@@ -124,7 +172,7 @@ export default function Campaign() {
         </div>
 
         {/* Stage Detail */}
-        <div ref={stageDetailRef} className="lg:col-span-3 border border-gray-800 bg-gray-900 rounded-lg p-6">
+        <div className="lg:col-span-3 border border-gray-800 bg-gray-900 rounded-lg p-6">
 
           {/* TTP Badge */}
           <div className="flex flex-wrap items-center gap-3 mb-6">
