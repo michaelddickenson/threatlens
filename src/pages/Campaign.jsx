@@ -50,35 +50,18 @@ const IOC_TYPE_COLORS = {
   'Target Pattern':    'border-amber-800 text-amber-300 bg-amber-950/40',
 }
 
-// All 14 MITRE ATT&CK tactics in kill chain order
 const MITRE_TACTICS = [
   'Reconnaissance', 'Resource Development', 'Initial Access', 'Execution',
   'Persistence', 'Privilege Escalation', 'Defense Evasion', 'Credential Access',
   'Discovery', 'Lateral Movement', 'Collection', 'Command & Control',
   'Exfiltration', 'Impact',
 ]
-const TACTIC_ABBREV = {
-  'Reconnaissance':     'Recon',
-  'Resource Development': 'Res Dev',
-  'Initial Access':     'Init Acc',
-  'Execution':          'Exec',
-  'Persistence':        'Persist',
-  'Privilege Escalation': 'Priv Esc',
-  'Defense Evasion':    'Def Eva',
-  'Credential Access':  'Cred Acc',
-  'Discovery':          'Discov',
-  'Lateral Movement':   'Lat Mov',
-  'Collection':         'Collect',
-  'Command & Control':  'C2',
-  'Exfiltration':       'Exfil',
-  'Impact':             'Impact',
-}
 
 export default function Campaign() {
   const { aptId, campaignId } = useParams()
   const [view, setView] = useState('attacker')
   const [activeStage, setActiveStage] = useState(0)
-  const stageDetailRef = useRef(null)
+  const contentRef = useRef(null)
 
   const apt = allAPTs[aptId]
   const campaign = apt?.campaigns.find(c => c.id === campaignId)
@@ -99,14 +82,13 @@ export default function Campaign() {
   // Count techniques per MITRE tactic
   const tacticCounts = {}
   for (const s of campaign.stages) {
-    const tactic = s.phase
-    tacticCounts[tactic] = (tacticCounts[tactic] || 0) + 1
+    tacticCounts[s.phase] = (tacticCounts[s.phase] || 0) + 1
   }
 
   function jumpToStage(i) {
     setActiveStage(i)
     if (view === 'ioc' || view === 'intelligence') setView('attacker')
-    stageDetailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   const tabBtn = (value, label, activeClass, idleClass) => (
@@ -121,10 +103,10 @@ export default function Campaign() {
   const dm = campaign.diamondModel
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10 font-mono">
+    <div className="max-w-[1400px] mx-auto px-4 py-8 font-mono">
 
       {/* Breadcrumb */}
-      <div className="text-xs text-gray-600 mb-6">
+      <div className="text-xs text-gray-600 mb-4">
         <Link to="/apt" className="hover:text-green-400 transition-colors">APT LIBRARY</Link>
         <span className="mx-2">›</span>
         <span className="text-gray-400">{apt.name}</span>
@@ -132,205 +114,187 @@ export default function Campaign() {
         <span className="text-green-400">{campaign.name}</span>
       </div>
 
-      {/* Campaign Header */}
-      <div className="border border-gray-800 bg-gray-900 rounded-lg p-6 mb-8">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-bold text-white mb-1">{campaign.name}</h2>
-            <p className="text-gray-400 text-sm max-w-2xl">{campaign.summary}</p>
+      {/* Campaign Header — compact */}
+      <div className="border border-gray-800 bg-gray-900 rounded-lg px-5 py-4 mb-4">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 mb-2">
+          <h2 className="text-xl font-bold text-white">{campaign.name}</h2>
+          <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+            <span className="text-green-400">{apt.name}</span>
+            <span>·</span>
+            <span>{campaign.year}</span>
+            <span>·</span>
+            <span>{campaign.target}</span>
+            <span>·</span>
+            <span className="text-gray-600">{campaign.sources[0]}</span>
           </div>
-          <div className="text-right text-xs text-gray-500 space-y-1">
-            <div className="text-green-400">{apt.name} · {campaign.year}</div>
-            <div>{campaign.target}</div>
-            <div className="text-gray-600">{campaign.sources[0]}</div>
-          </div>
+        </div>
+        <p className="text-gray-400 text-sm leading-relaxed">{campaign.summary}</p>
+      </div>
+
+      {/* ── Kill Chain Coverage Heatmap — always visible ── */}
+      <div className="border border-gray-800 rounded-lg overflow-hidden mb-4">
+        <div className="px-4 py-2 border-b border-gray-800 flex items-center justify-between">
+          <p className="text-xs text-gray-600 uppercase tracking-widest">Kill Chain Coverage</p>
+          <p className="text-xs text-gray-700">
+            {Object.keys(tacticCounts).length}/{MITRE_TACTICS.length} tactics
+            <span className="text-green-800 ml-2">{campaign.stages.length} techniques</span>
+          </p>
+        </div>
+        <div className="flex overflow-x-auto">
+          {MITRE_TACTICS.map((tactic, idx) => {
+            const count = tacticCounts[tactic] || 0
+            const active = count > 0
+            return (
+              <div
+                key={tactic}
+                className={`relative flex-1 min-w-[80px] flex flex-col items-center px-2 pt-4 pb-3 text-center ${
+                  idx < MITRE_TACTICS.length - 1 ? 'border-r border-gray-800' : ''
+                } ${active ? 'bg-green-900/10' : ''}`}
+              >
+                {/* Top stripe indicator */}
+                <div className={`absolute top-0 inset-x-0 h-[3px] ${active ? 'bg-green-500' : 'bg-gray-800'}`} />
+                {/* Count */}
+                <div className={`text-base font-bold mb-2 leading-none ${active ? 'text-green-400' : 'text-gray-700'}`}>
+                  {active ? count : '—'}
+                </div>
+                {/* Full tactic name */}
+                <div className={`text-xs leading-tight ${active ? 'text-green-300' : 'text-gray-700'}`}>
+                  {tactic}
+                </div>
+              </div>
+            )
+          })}
         </div>
       </div>
 
       {/* View Mode Tabs */}
-      <div className="flex flex-wrap items-center gap-2 mb-6">
-        <span className="text-xs text-gray-500 mr-2">VIEW MODE:</span>
+      <div className="flex flex-wrap items-center gap-2 mb-4">
+        <span className="text-xs text-gray-500 mr-1">VIEW:</span>
         {tabBtn('attacker',     '⚔ ATTACKER',    'bg-red-900 border-red-500 text-red-300',         'border-gray-700 text-gray-500 hover:border-red-700 hover:text-red-400')}
         {tabBtn('defender',     '🛡 DEFENDER',    'bg-blue-900 border-blue-500 text-blue-300',       'border-gray-700 text-gray-500 hover:border-blue-700 hover:text-blue-400')}
         {tabBtn('ioc',          '🔍 IOCs',         'bg-purple-900 border-purple-500 text-purple-300', 'border-gray-700 text-gray-500 hover:border-purple-700 hover:text-purple-400')}
         {tabBtn('intelligence', '◆ INTELLIGENCE', 'bg-green-900 border-green-500 text-green-300',   'border-gray-700 text-gray-500 hover:border-green-700 hover:text-green-400')}
       </div>
 
-      {/* ── ATTACKER / DEFENDER views ── */}
+      {/* ── ATTACKER / DEFENDER — 2-column: vertical timeline | stage detail ── */}
       {(view === 'attacker' || view === 'defender') && (
-        <>
-          {/* Kill Chain Timeline */}
-          <div className="border border-gray-800 bg-gray-900/50 rounded-lg px-6 py-4 mb-4">
-            <p className="text-xs text-gray-600 uppercase tracking-widest mb-4">Kill Chain Progression</p>
-            <div className="overflow-x-auto pb-1">
-              <div className="flex items-center min-w-max">
-                {campaign.stages.map((s, i) => {
-                  const styles = PHASE_STYLES[s.phase] ?? FALLBACK_STYLE
-                  const isActive = activeStage === i
-                  return (
-                    <div key={s.id} className="flex items-center">
-                      <button
-                        onClick={() => jumpToStage(i)}
-                        className={`flex flex-col items-center text-center px-4 py-3 rounded border transition-all w-32 ${
-                          isActive ? 'border-green-400 bg-green-950' : styles.idle
-                        }`}
-                      >
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm mb-2 border transition-colors ${
-                          isActive ? 'bg-green-400 border-green-400 text-gray-950' : 'bg-gray-800 border-gray-700 text-gray-400'
-                        }`}>
-                          {i + 1}
-                        </div>
-                        <div className={`text-xs font-bold leading-tight mb-1 ${isActive ? 'text-green-300' : ''}`}>{s.name}</div>
-                        <div className="text-xs font-mono opacity-50">{s.ttp}</div>
-                      </button>
+        <div ref={contentRef} className="grid grid-cols-1 lg:grid-cols-[15rem_1fr] gap-4">
+
+          {/* Left: Vertical Kill Chain Timeline */}
+          <div className="border border-gray-800 bg-gray-900 rounded-lg p-4">
+            <p className="text-xs text-gray-600 uppercase tracking-widest mb-4">Kill Chain</p>
+            <div>
+              {campaign.stages.map((s, i) => {
+                const isActive = activeStage === i
+                return (
+                  <div key={s.id} className="flex items-stretch">
+                    {/* Connector column */}
+                    <div className="flex flex-col items-center mr-3 shrink-0">
+                      <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold border transition-colors shrink-0 ${
+                        isActive
+                          ? 'bg-green-400 border-green-400 text-gray-950'
+                          : 'bg-gray-800 border-gray-700 text-gray-500'
+                      }`}>
+                        {i + 1}
+                      </div>
                       {i < campaign.stages.length - 1 && (
-                        <div className="flex items-center mx-2 shrink-0">
-                          <div className="w-6 h-px bg-gray-700" />
-                          <span className="text-gray-600 text-sm">›</span>
-                        </div>
+                        <div className="w-px flex-1 bg-gray-800 my-1 min-h-[12px]" />
                       )}
                     </div>
-                  )
-                })}
-              </div>
-            </div>
-          </div>
 
-          {/* Kill Chain Heatmap */}
-          <div className="border border-gray-800 bg-gray-900/50 rounded-lg px-6 py-4 mb-6">
-            <p className="text-xs text-gray-600 uppercase tracking-widest mb-4">Kill Chain Coverage Heatmap</p>
-            <div className="overflow-x-auto pb-1">
-              <div className="flex items-stretch gap-1 min-w-max">
-                {MITRE_TACTICS.map(tactic => {
-                  const count = tacticCounts[tactic] || 0
-                  const active = count > 0
-                  return (
-                    <div
-                      key={tactic}
-                      className={`flex flex-col items-center justify-between px-2 pt-3 pb-2 rounded border text-center w-[62px] transition-colors ${
-                        active
-                          ? 'border-green-600 bg-green-900/40'
-                          : 'border-gray-800 bg-gray-800/20'
+                    {/* Stage button */}
+                    <button
+                      onClick={() => setActiveStage(i)}
+                      className={`flex-1 text-left pb-4 min-w-0 transition-colors ${
+                        isActive ? 'text-green-300' : 'text-gray-500 hover:text-gray-300'
                       }`}
                     >
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mb-2 shrink-0 ${
-                        active ? 'bg-green-400 text-gray-950' : 'bg-gray-800 text-gray-700'
-                      }`}>
-                        {active ? count : '·'}
-                      </div>
-                      <div className={`text-xs leading-tight ${active ? 'text-green-300' : 'text-gray-700'}`}>
-                        {TACTIC_ABBREV[tactic]}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-            <p className="text-xs text-gray-700 mt-3">
-              {Object.keys(tacticCounts).length} of {MITRE_TACTICS.length} tactics covered ·
-              <span className="text-green-700 ml-1">{campaign.stages.length} techniques mapped</span>
-            </p>
-          </div>
-
-          {/* Stage Navigator + Stage Detail */}
-          <div ref={stageDetailRef} className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-
-            {/* Stage Navigator */}
-            <div className="lg:col-span-1 space-y-2">
-              <p className="text-xs text-gray-600 mb-3 uppercase tracking-widest">Attack Stages</p>
-              {campaign.stages.map((s, i) => (
-                <button
-                  key={s.id}
-                  onClick={() => setActiveStage(i)}
-                  className={`w-full text-left px-3 py-3 rounded border text-xs transition-colors ${
-                    activeStage === i
-                      ? 'border-green-400 bg-green-950 text-green-300'
-                      : 'border-gray-800 text-gray-500 hover:border-gray-600 hover:text-gray-300'
-                  }`}
-                >
-                  <div className="text-gray-600 mb-1">0{i + 1}</div>
-                  <div className="font-bold">{s.name}</div>
-                  <div className="text-gray-600 mt-1">{s.ttp}</div>
-                </button>
-              ))}
-            </div>
-
-            {/* Stage Detail */}
-            <div className="lg:col-span-3 border border-gray-800 bg-gray-900 rounded-lg p-6">
-              <div className="flex flex-wrap items-center gap-3 mb-6">
-                <a
-                  href={`https://attack.mitre.org/techniques/${stage.ttp.replace('.', '/')}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-xs bg-gray-800 border border-yellow-700 text-yellow-400 px-3 py-1 rounded font-bold hover:bg-yellow-900 transition-colors"
-                >
-                  ↗ {stage.ttp}
-                </a>
-                <span className="text-xs text-gray-400">{stage.ttpName}</span>
-                <span className="text-xs text-gray-600 border border-gray-800 px-2 py-1 rounded">{stage.phase}</span>
-              </div>
-
-              <h3 className="text-lg font-bold text-white mb-4">{stage.name}</h3>
-
-              {view === 'attacker' ? (
-                <div className="space-y-5">
-                  <div>
-                    <p className="text-xs text-red-400 uppercase tracking-widest mb-2">What the attacker did</p>
-                    <p className="text-gray-300 text-sm leading-relaxed">{stage.attacker.summary}</p>
+                      <div className="text-xs font-bold leading-tight mb-0.5">{s.name}</div>
+                      <div className={`text-xs font-mono ${isActive ? 'text-green-500/70' : 'text-gray-700'}`}>{s.ttp}</div>
+                      <div className={`text-xs mt-0.5 ${isActive ? 'text-green-600/60' : 'text-gray-800'}`}>{s.phase}</div>
+                    </button>
                   </div>
-                  <div>
-                    <p className="text-xs text-red-400 uppercase tracking-widest mb-2">Tools Used</p>
-                    <div className="flex flex-wrap gap-2">
-                      {stage.attacker.tools.map(tool => (
-                        <span key={tool} className="text-xs bg-red-950 border border-red-900 text-red-300 px-2 py-1 rounded">{tool}</span>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-xs text-red-400 uppercase tracking-widest mb-2">Commands / Indicators</p>
-                    <div className="bg-gray-950 border border-gray-800 rounded p-4 space-y-1">
-                      {stage.attacker.commands.map((cmd, i) => (
-                        <div key={i} className="text-xs text-green-300 font-mono">{cmd}</div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-5">
-                  <div>
-                    <p className="text-xs text-blue-400 uppercase tracking-widest mb-2">Logs Generated</p>
-                    <div className="bg-gray-950 border border-gray-800 rounded p-4 space-y-2">
-                      {stage.defender.logs.map((log, i) => (
-                        <div key={i} className="text-xs text-gray-300 flex items-start gap-2">
-                          <span className="text-blue-600 mt-0.5">▸</span>{log}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-xs text-blue-400 uppercase tracking-widest mb-2">Detection Guidance</p>
-                    <p className="text-gray-300 text-sm leading-relaxed">{stage.defender.detection}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-blue-400 uppercase tracking-widest mb-2">SIEM Query</p>
-                    <div className="bg-gray-950 border border-gray-800 rounded p-4">
-                      <code className="text-xs text-yellow-300">{stage.defender.siemQuery}</code>
-                    </div>
-                  </div>
-                  <div className="border border-orange-900 bg-orange-950 rounded p-4">
-                    <p className="text-xs text-orange-400 uppercase tracking-widest mb-2">⚠ If Detection Fails</p>
-                    <p className="text-orange-300 text-sm leading-relaxed">{stage.defender.ifMissed}</p>
-                  </div>
-                </div>
-              )}
+                )
+              })}
             </div>
           </div>
-        </>
+
+          {/* Right: Stage Detail */}
+          <div className="border border-gray-800 bg-gray-900 rounded-lg p-5">
+            {/* TTP header */}
+            <div className="flex flex-wrap items-center gap-3 mb-5">
+              <a
+                href={`https://attack.mitre.org/techniques/${stage.ttp.replace('.', '/')}`}
+                target="_blank"
+                rel="noreferrer"
+                className="text-xs bg-gray-800 border border-yellow-700 text-yellow-400 px-3 py-1 rounded font-bold hover:bg-yellow-900 transition-colors"
+              >
+                ↗ {stage.ttp}
+              </a>
+              <span className="text-xs text-gray-400">{stage.ttpName}</span>
+              <span className="text-xs text-gray-600 border border-gray-800 px-2 py-1 rounded">{stage.phase}</span>
+            </div>
+
+            <h3 className="text-lg font-bold text-white mb-4">{stage.name}</h3>
+
+            {view === 'attacker' ? (
+              <div className="space-y-5">
+                <div>
+                  <p className="text-xs text-red-400 uppercase tracking-widest mb-2">What the attacker did</p>
+                  <p className="text-gray-300 text-sm leading-relaxed">{stage.attacker.summary}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-red-400 uppercase tracking-widest mb-2">Tools Used</p>
+                  <div className="flex flex-wrap gap-2">
+                    {stage.attacker.tools.map(tool => (
+                      <span key={tool} className="text-xs bg-red-950 border border-red-900 text-red-300 px-2 py-1 rounded">{tool}</span>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-red-400 uppercase tracking-widest mb-2">Commands / Indicators</p>
+                  <div className="bg-gray-950 border border-gray-800 rounded p-4 space-y-1">
+                    {stage.attacker.commands.map((cmd, i) => (
+                      <div key={i} className="text-xs text-green-300 font-mono">{cmd}</div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-5">
+                <div>
+                  <p className="text-xs text-blue-400 uppercase tracking-widest mb-2">Logs Generated</p>
+                  <div className="bg-gray-950 border border-gray-800 rounded p-4 space-y-2">
+                    {stage.defender.logs.map((log, i) => (
+                      <div key={i} className="text-xs text-gray-300 flex items-start gap-2">
+                        <span className="text-blue-600 mt-0.5 shrink-0">▸</span>{log}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-blue-400 uppercase tracking-widest mb-2">Detection Guidance</p>
+                  <p className="text-gray-300 text-sm leading-relaxed">{stage.defender.detection}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-blue-400 uppercase tracking-widest mb-2">SIEM Query</p>
+                  <div className="bg-gray-950 border border-gray-800 rounded p-4">
+                    <code className="text-xs text-yellow-300 break-all">{stage.defender.siemQuery}</code>
+                  </div>
+                </div>
+                <div className="border border-orange-900 bg-orange-950 rounded p-4">
+                  <p className="text-xs text-orange-400 uppercase tracking-widest mb-2">⚠ If Detection Fails</p>
+                  <p className="text-orange-300 text-sm leading-relaxed">{stage.defender.ifMissed}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       )}
 
       {/* ── IOC view ── */}
       {view === 'ioc' && (
-        <div className="border border-gray-800 bg-gray-900 rounded-lg p-6">
+        <div className="border border-gray-800 bg-gray-900 rounded-lg p-5">
           <div className="mb-5">
             <p className="text-xs text-gray-600 uppercase tracking-widest mb-1">// indicators of compromise</p>
             <h3 className="text-sm font-bold text-white tracking-widest">
@@ -369,9 +333,9 @@ export default function Campaign() {
         </div>
       )}
 
-      {/* ── INTELLIGENCE view — Diamond Intrusion Model ── */}
+      {/* ── INTELLIGENCE — Diamond Intrusion Model ── */}
       {view === 'intelligence' && (
-        <div className="border border-gray-800 bg-gray-900 rounded-lg p-6">
+        <div className="border border-gray-800 bg-gray-900 rounded-lg p-5">
           <div className="mb-8">
             <p className="text-xs text-gray-600 uppercase tracking-widest mb-1">// intelligence analysis</p>
             <h3 className="text-sm font-bold text-white tracking-widest">DIAMOND INTRUSION MODEL</h3>
@@ -379,42 +343,37 @@ export default function Campaign() {
           </div>
 
           {dm ? (
-            /* Diamond layout: absolute cards over a full-width SVG */
             <div className="relative min-h-[660px]">
-
-              {/* Background SVG — lines connecting the 4 vertex card centers */}
+              {/* Background SVG diamond lines */}
               <svg
                 className="absolute inset-0 w-full h-full z-0 pointer-events-none"
                 viewBox="0 0 100 100"
                 preserveAspectRatio="none"
               >
-                {/* Diamond outline sides */}
                 <line x1="50" y1="14" x2="10" y2="50" stroke="#22c55e" strokeOpacity="0.30" strokeWidth="1" vectorEffect="non-scaling-stroke" />
                 <line x1="10" y1="50" x2="50" y2="86" stroke="#22c55e" strokeOpacity="0.30" strokeWidth="1" vectorEffect="non-scaling-stroke" />
                 <line x1="50" y1="86" x2="90" y2="50" stroke="#22c55e" strokeOpacity="0.30" strokeWidth="1" vectorEffect="non-scaling-stroke" />
                 <line x1="90" y1="50" x2="50" y2="14" stroke="#22c55e" strokeOpacity="0.30" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-                {/* Diagonal cross-axes (dashed) */}
                 <line x1="50" y1="14" x2="50" y2="86" stroke="#22c55e" strokeOpacity="0.12" strokeWidth="1" strokeDasharray="4 4" vectorEffect="non-scaling-stroke" />
                 <line x1="10" y1="50" x2="90" y2="50" stroke="#22c55e" strokeOpacity="0.12" strokeWidth="1" strokeDasharray="4 4" vectorEffect="non-scaling-stroke" />
-                {/* Vertex glow dots */}
                 <circle cx="50" cy="14" r="2" fill="#22c55e" fillOpacity="0.5" vectorEffect="non-scaling-stroke" />
                 <circle cx="10" cy="50" r="2" fill="#22c55e" fillOpacity="0.5" vectorEffect="non-scaling-stroke" />
                 <circle cx="90" cy="50" r="2" fill="#22c55e" fillOpacity="0.5" vectorEffect="non-scaling-stroke" />
                 <circle cx="50" cy="86" r="2" fill="#22c55e" fillOpacity="0.5" vectorEffect="non-scaling-stroke" />
               </svg>
 
-              {/* ── Adversary — top center ── */}
+              {/* Adversary — top center */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-56 z-10">
                 <div className="border border-red-800 bg-gray-900 rounded-lg p-4 shadow-lg">
                   <div className="text-xs text-red-400 font-bold uppercase tracking-wider mb-3">◆ Adversary</div>
                   <div className="text-sm text-white font-bold mb-1">{dm.adversary.name}</div>
                   <div className="text-xs text-gray-400 mb-2 leading-relaxed">{dm.adversary.sponsor}</div>
-                  <div className="text-xs text-gray-600 mb-2 leading-relaxed">{dm.adversary.aliases.join(' · ')}</div>
+                  <div className="text-xs text-gray-600 mb-2">{dm.adversary.aliases.join(' · ')}</div>
                   <div className="text-xs text-red-400/70 italic">{dm.adversary.motivation}</div>
                 </div>
               </div>
 
-              {/* ── Capability — middle left ── */}
+              {/* Capability — middle left */}
               <div className="absolute top-1/2 left-0 -translate-y-1/2 w-56 z-10">
                 <div className="border border-orange-800 bg-gray-900 rounded-lg p-4 shadow-lg">
                   <div className="text-xs text-orange-400 font-bold uppercase tracking-wider mb-3">◆ Capability</div>
@@ -427,7 +386,7 @@ export default function Campaign() {
                 </div>
               </div>
 
-              {/* ── Infrastructure — middle right ── */}
+              {/* Infrastructure — middle right */}
               <div className="absolute top-1/2 right-0 -translate-y-1/2 w-56 z-10">
                 <div className="border border-yellow-800 bg-gray-900 rounded-lg p-4 shadow-lg">
                   <div className="text-xs text-yellow-400 font-bold uppercase tracking-wider mb-3">◆ Infrastructure</div>
@@ -441,7 +400,7 @@ export default function Campaign() {
                 </div>
               </div>
 
-              {/* ── Victim — bottom center ── */}
+              {/* Victim — bottom center */}
               <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-56 z-10">
                 <div className="border border-blue-800 bg-gray-900 rounded-lg p-4 shadow-lg">
                   <div className="text-xs text-blue-400 font-bold uppercase tracking-wider mb-3">◆ Victim</div>
@@ -450,7 +409,6 @@ export default function Campaign() {
                   <div className="text-xs text-gray-600 italic leading-relaxed">{dm.victim.targeting}</div>
                 </div>
               </div>
-
             </div>
           ) : (
             <p className="text-gray-600 text-sm">Diamond model data not available for this campaign.</p>
@@ -459,8 +417,8 @@ export default function Campaign() {
       )}
 
       {/* MITRE ATT&CK TTP Navigator Panel */}
-      <div className="mt-8 border border-gray-800 bg-gray-900 rounded-lg p-6">
-        <div className="flex flex-wrap items-start justify-between gap-4 mb-5">
+      <div className="mt-6 border border-gray-800 bg-gray-900 rounded-lg p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
           <div>
             <p className="text-xs text-gray-600 uppercase tracking-widest mb-1">// mitre att&ck coverage</p>
             <h3 className="text-sm font-bold text-white tracking-widest">TECHNIQUES USED IN THIS CAMPAIGN</h3>
