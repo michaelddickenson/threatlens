@@ -19,6 +19,29 @@ const apt41 = {
         "CISA Advisory AA22-279A",
         "Mandiant APT41 Profile",
       ],
+      diamondModel: {
+        adversary: {
+          name: "APT41 (Winnti / Double Dragon)",
+          sponsor: "Chinese MSS — Ministry of State Security, Chengdu 404 Network Technology",
+          aliases: ["Barium", "Earth Baku", "Wicked Panda", "Bronze Atlas"],
+          motivation: "Dual-mission: state espionage for IP theft and financially motivated cybercrime",
+        },
+        capability: {
+          malware: ["DUSTPAN", "DUSTTRAP", "PRIVATELOG", "WINNKIT (kernel rootkit)", "Cobalt Strike"],
+          ttps: ["T1195 — Supply Chain Compromise", "T1059.003 — Windows Cmd Shell", "T1053.005 — Scheduled Task", "T1078 — Valid Accounts", "T1041 — Exfil over C2"],
+          sophistication: "Nation-State — kernel-level rootkit (WINNKIT), CLFS log steganography, decade-long dwell time",
+        },
+        infrastructure: {
+          domains: ["update.microsoft-cdn[.]com", "sap-update[.]net", "oracle-update[.]com"],
+          ips: ["45.77.229[.]104", "194.165.16[.]77", "103.59.144[.]183"],
+          hosting: "Vultr / Choopa (AS20473), leased dedicated servers, compromised VPS infrastructure",
+        },
+        victim: {
+          sectors: "Pharmaceutical (drug formulas, clinical trial data), manufacturing, defense contractors, technology companies",
+          geography: "North America, Western Europe, Asia-Pacific — organizations with high-value R&D and defense IP",
+          targeting: "Dozens of companies across multiple years; estimated 400+ GB of proprietary research and defense blueprints exfiltrated",
+        },
+      },
       stages: [
         {
           id: "initial-access",
@@ -51,6 +74,11 @@ const apt41 = {
             ifMissed:
               "APT41 establishes an undetected foothold inside the corporate network. DUSTPAN dropper deploys secondary payloads and begins internal reconnaissance. The attacker operates from a trusted host with legitimate software as cover, invisible to perimeter controls.",
           },
+          iocs: [
+            { type: "IP", indicator: "45.77.229[.]104", description: "APT41 DUSTPAN C2 server — initial callback from trojanized vendor update on victim install" },
+            { type: "File", indicator: "SAPUpdate.dll", description: "Trojanized vendor DLL used in supply chain compromise — drops DUSTPAN loader on execution" },
+            { type: "Domain", indicator: "update.microsoft-cdn[.]com", description: "APT41 typosquat domain mimicking Microsoft CDN — used for secondary payload staging" },
+          ],
         },
         {
           id: "execution",
@@ -84,6 +112,11 @@ const apt41 = {
             ifMissed:
               "APT41 completes internal reconnaissance undetected. Network topology, domain structure, and high-value targets identified. Secondary payloads decoded and staged. Attacker fully understands the environment and pivots to establishing persistent access.",
           },
+          iocs: [
+            { type: "File", indicator: "C:\\ProgramData\\update.b64", description: "Base64-encoded PRIVATELOG payload staged for certutil decoding — dropped by DUSTPAN" },
+            { type: "Command", indicator: "certutil -decode update.b64 update.dll", description: "LOLBin payload decoding technique — avoids writing files with executable extensions directly" },
+            { type: "Path", indicator: "C:\\Windows\\Temp\\~df1.tmp", description: "Reconnaissance output file containing domain enumeration and whoami results" },
+          ],
         },
         {
           id: "persistence",
@@ -116,6 +149,11 @@ const apt41 = {
             ifMissed:
               "APT41 achieves multi-year persistence. Reboots and AV scans do not remove the implant. PRIVATELOG payload hidden in CLFS logs survives forensic investigation and reimaging cycles. Attacker retains access for ongoing IP theft spanning years.",
           },
+          iocs: [
+            { type: "Scheduled Task", indicator: "\\Microsoft\\Windows\\Maintenance\\USORefresh", description: "Malicious scheduled task mimicking Windows Update Orchestrator — runs DUSTTRAP loader" },
+            { type: "File", indicator: "*.blf (non-system directory)", description: "CLFS transaction log file used by PRIVATELOG to conceal encrypted payload — evades most scanners" },
+            { type: "Command", indicator: "regsvr32 /s /n /u /i:<url> scrobj.dll", description: "Squiblydoo fileless execution technique used in APT41 scheduled tasks for payload delivery" },
+          ],
         },
         {
           id: "privilege-escalation",
@@ -149,6 +187,11 @@ const apt41 = {
             ifMissed:
               "APT41 obtains domain admin credentials. Full lateral movement across all domain-joined systems becomes possible. WINNKIT rootkit hides attacker processes from EDR and Task Manager. Defenders observe no anomalous processes despite full domain compromise.",
           },
+          iocs: [
+            { type: "File", indicator: "C:\\Windows\\Temp\\~tmp.dmp", description: "LSASS memory dump created via comsvcs.dll MiniDump — contains plaintext credential material" },
+            { type: "Driver", indicator: "WINNKIT.sys", description: "Signed kernel-mode rootkit with revoked certificate — intercepts system calls to hide APT41 processes from EDR" },
+            { type: "Access Rights", indicator: "GrantedAccess 0x1010 → lsass.exe", description: "Sysmon Event ID 10 pattern: PROCESS_VM_READ + PROCESS_QUERY_INFORMATION on LSASS" },
+          ],
         },
         {
           id: "exfiltration",
@@ -183,6 +226,11 @@ const apt41 = {
             ifMissed:
               "Hundreds of gigabytes of pharmaceutical formulas, clinical trial data, and defense contractor IP silently exfiltrated over months. Stolen IP accelerates Chinese state-owned pharmaceutical R&D and informs defense procurement. Victim organizations remain unaware for years.",
           },
+          iocs: [
+            { type: "File", indicator: "svchost32.exe", description: "Renamed 7-Zip binary used to compress exfil data — image filename vs original filename mismatch detectable via Sysmon" },
+            { type: "IP", indicator: "194.165.16[.]77", description: "APT41 exfiltration C2 server — destination of AES-256 encrypted .7z archive HTTPS transfers" },
+            { type: "File", indicator: "out.7z", description: "Encrypted staging archive containing stolen pharmaceutical IP — created in C:\\Windows\\Temp\\ before exfil" },
+          ],
         },
       ],
     },

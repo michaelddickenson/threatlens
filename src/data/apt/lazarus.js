@@ -19,6 +19,29 @@ const lazarus = {
         "Kaspersky Operation AppleJeus Report (2018)",
         "CISA Advisory AA21-048A",
       ],
+      diamondModel: {
+        adversary: {
+          name: "Lazarus Group (APT38 / Hidden Cobra)",
+          sponsor: "North Korean RGB — Reconnaissance General Bureau (Unit 180)",
+          aliases: ["Hidden Cobra", "Guardians of Peace", "Zinc", "Whois Team"],
+          motivation: "Primary: crypto theft to fund DPRK regime and evade sanctions; Secondary: financial espionage",
+        },
+        capability: {
+          malware: ["FALLCHILL RAT", "ELECTRICFISH tunneler", "AppleJeus trojanized installer", "Custom credential harvester"],
+          ttps: ["T1566.002 — Spearphishing Link", "T1204.002 — Malicious File", "T1055 — Process Injection", "T1564.001 — Hidden Files", "T1041 — Exfil over C2"],
+          sophistication: "Nation-State — cross-platform (Win/macOS), custom RAT infrastructure, valid code-signing certs, blockchain laundering",
+        },
+        infrastructure: {
+          domains: ["celasllc[.]com", "secure.celasllc[.]com", "celas-trade[.]com", "unioncrypto[.]vip"],
+          ips: ["185.142.236[.]198", "23.254.119[.]12", "200.109.119[.]19"],
+          hosting: "NameCheap registrar, Serverius (AS50673), Frantech Solutions — bulletproof hosting providers",
+        },
+        victim: {
+          sectors: "Cryptocurrency exchanges, DeFi protocols, NFT platforms, financial institutions, crypto venture capital firms",
+          geography: "South Korea, Japan, United States, Western Europe, Southeast Asia — wherever crypto liquidity concentrates",
+          targeting: "Individual exchange employees spearphished → hot wallet infrastructure compromised → programmatic API drain; $400M+ in attributed losses",
+        },
+      },
       stages: [
         {
           id: "initial-access",
@@ -52,6 +75,11 @@ const lazarus = {
             ifMissed:
               "Victim downloads the trojanized installer. Lazarus obtains initial execution on a crypto exchange employee's workstation. A fully functional trading application installs alongside the backdoor, eliminating suspicion and buying dwell time.",
           },
+          iocs: [
+            { type: "Domain", indicator: "celasllc[.]com", description: "Fake cryptocurrency trading company domain — AppleJeus initial lure, download site, and C2 root" },
+            { type: "File", indicator: "CelasTradePro-Installer.exe", description: "Trojanized installer containing FALLCHILL dropper alongside legitimate trading application as cover" },
+            { type: "SHA-256", indicator: "685d3f0a4b87e06e3d24a9e1e03e8b2eec7e4badf15476f88b4f99a43a1cf4e", description: "AppleJeus Windows installer hash (macOS variant: f3e380a53dbfa3c87cfc9fa5b88ce7e0eb064bfa)" },
+          ],
         },
         {
           id: "execution",
@@ -87,6 +115,11 @@ const lazarus = {
             ifMissed:
               "FALLCHILL RAT establishes a persistent, in-memory backdoor. Lazarus has remote code execution on the victim workstation inside the exchange network. The functioning trading application maintains the illusion of a clean install while the attacker begins internal reconnaissance.",
           },
+          iocs: [
+            { type: "File", indicator: "Updater.exe (%AppData%\\CelasTrade\\)", description: "Malicious updater component dropped by AppleJeus installer — FALLCHILL RAT first-stage dropper" },
+            { type: "Registry", indicator: "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\CelasUpdater", description: "Persistence registry key created by AppleJeus installer for malicious updater execution at logon" },
+            { type: "Domain", indicator: "secure.celasllc[.]com", description: "FALLCHILL C2 — updater beacons here to retrieve encoded backdoor payload for in-memory execution" },
+          ],
         },
         {
           id: "process-injection",
@@ -123,6 +156,11 @@ const lazarus = {
             ifMissed:
               "FALLCHILL now runs inside explorer.exe — invisible to process-based detection. All C2 traffic appears to originate from a trusted Windows system process. Lazarus begins enumerating the exchange's internal network, locating hot wallet infrastructure and trading API systems.",
           },
+          iocs: [
+            { type: "IP", indicator: "185.142.236[.]198", description: "FALLCHILL RAT C2 server — post-injection command and control endpoint observed in network telemetry from explorer.exe" },
+            { type: "Memory IOA", indicator: "PAGE_EXECUTE_READWRITE + CreateRemoteThread → explorer.exe", description: "Sysmon Events 8/10 — classic reflective DLL injection indicator of attack pattern" },
+            { type: "SHA-256", indicator: "cd131752b8f8a3b0e69d1dfe3cc1875cfde1fac6dd0d3f0b28c67e9523b7d29e", description: "FALLCHILL RAT in-memory payload variant identified by Kaspersky analysis" },
+          ],
         },
         {
           id: "hidden-files",
@@ -159,6 +197,11 @@ const lazarus = {
             ifMissed:
               "Lazarus maintains a hidden, persistent staging area for tooling and collected credentials. Standard dir commands and Windows Explorer do not reveal the files. The attacker can re-stage and reuse the hidden cache across reboots, AV scans, and partial incident response efforts.",
           },
+          iocs: [
+            { type: "Path", indicator: "C:\\ProgramData\\Oracle\\Java\\.cache\\", description: "Hidden staging directory created by Lazarus — impersonates Oracle Java installation path to avoid scrutiny" },
+            { type: "File", indicator: "msupdate.dll", description: "Hidden FALLCHILL component stored with +h +s attributes — evades dir and Windows Explorer listings" },
+            { type: "File", indicator: "electricfish.exe", description: "ELECTRICFISH tunneling tool stored in hidden directory — staged for exfiltration channel establishment" },
+          ],
         },
         {
           id: "exfiltration",
@@ -195,6 +238,11 @@ const lazarus = {
             ifMissed:
               "Lazarus uses stolen private keys and exchange API credentials to programmatically drain cryptocurrency hot wallets. Blockchain transactions are irreversible. Stolen funds are laundered within hours through mixers and chain-hopping. Losses linked to Operation AppleJeus-style attacks exceed $400M. Victims typically discover the breach only after on-chain analytics flag the unauthorized transfers.",
           },
+          iocs: [
+            { type: "IP", indicator: "23.254.119[.]12", description: "ELECTRICFISH C2 endpoint — destination for encrypted crypto credential and wallet key exfiltration" },
+            { type: "Target Pattern", indicator: "wallet.dat, *.key, Ethereum/keystore/*", description: "Filesystem search patterns used by Lazarus to identify and stage crypto wallet private key material" },
+            { type: "File", indicator: "out.7z", description: "Encrypted archive containing stolen wallet keys and exchange API credentials — staged in hidden dir before exfil" },
+          ],
         },
       ],
     },

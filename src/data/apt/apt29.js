@@ -19,6 +19,29 @@ const apt29 = {
         "Mandiant UNC2452 Report",
         "Microsoft MSTIC Analysis",
       ],
+      diamondModel: {
+        adversary: {
+          name: "APT29 (Cozy Bear / NOBELIUM)",
+          sponsor: "Russian SVR — Foreign Intelligence Service",
+          aliases: ["Midnight Blizzard", "NOBELIUM", "The Dukes", "Cozy Bear"],
+          motivation: "Long-term strategic espionage targeting governments and critical infrastructure",
+        },
+        capability: {
+          malware: ["SUNBURST", "TEARDROP", "RAINDROP", "Cobalt Strike Beacon", "Custom SAML forger"],
+          ttps: ["T1195.002 — Supply Chain Compromise", "T1071.001 — Web Protocols C2", "T1078 — Golden SAML", "T1550.001 — App Access Token", "T1136.003 — Cloud Account"],
+          sophistication: "Nation-State — novel supply chain vector, custom DGA C2, in-memory execution, Golden SAML",
+        },
+        infrastructure: {
+          domains: ["avsvmcloud[.]com (DGA)", "databasegalore[.]com", "panhardware[.]com", "deftsecurity[.]com"],
+          ips: ["13.59.205[.]66", "54.193.127[.]66", "54.215.192[.]52", "34.203.203[.]23"],
+          hosting: "AWS us-east-1 / us-west-2 (victim-blending), Azure (compromised tenants), GoDaddy registrar",
+        },
+        victim: {
+          sectors: "US Federal Government (Treasury, Commerce, DHS, State), Fortune 500, defense contractors, think tanks, IT management vendors",
+          geography: "United States, United Kingdom, Canada, Western Europe (focus: Washington D.C. policy community)",
+          targeting: "~18,000 organizations received SUNBURST via Orion update; ~100 selected for hands-on exploitation",
+        },
+      },
       stages: [
         {
           id: "initial-access",
@@ -50,6 +73,11 @@ const apt29 = {
             ifMissed:
               "Attacker establishes persistent backdoor across thousands of networks. SUNBURST begins beaconing to C2 infrastructure, enabling hands-on-keyboard access.",
           },
+          iocs: [
+            { type: "SHA-256", indicator: "32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77", description: "SUNBURST backdoor DLL (SolarWinds.Orion.Core.BusinessLayer.dll)" },
+            { type: "Domain", indicator: "avsvmcloud[.]com", description: "SUNBURST primary C2 DGA root domain — used in all victim beacons" },
+            { type: "File", indicator: "SolarWinds.Orion.Core.BusinessLayer.dll", description: "Malicious DLL injected into SolarWinds Orion build pipeline" },
+          ],
         },
         {
           id: "execution",
@@ -81,6 +109,11 @@ const apt29 = {
             ifMissed:
               "Full C2 channel established. Attacker now has interactive access. TEARDROP loader deployed to execute Cobalt Strike Beacon in memory.",
           },
+          iocs: [
+            { type: "URL Pattern", indicator: "/swip/upd/SolarWinds.CortexPlugin.Components.dll", description: "SUNBURST C2 URI path blending with legitimate Orion software update traffic" },
+            { type: "Domain", indicator: "databasegalore[.]com", description: "Second-stage C2 server used after initial SUNBURST check-in and victim validation" },
+            { type: "User-Agent", indicator: "SolarWinds-Orion/2019.4.5200.9083", description: "Spoofed User-Agent string used in SUNBURST C2 HTTP beacon requests" },
+          ],
         },
         {
           id: "privilege-escalation",
@@ -113,6 +146,11 @@ const apt29 = {
             ifMissed:
               "Attacker has persistent, undetectable admin access to cloud environment. Can read all email, access SharePoint, exfiltrate data at will without triggering traditional AV/EDR.",
           },
+          iocs: [
+            { type: "Tool", indicator: "AADInternals (PowerShell module)", description: "Open-source tool used to export ADFS signing certs and forge SAML tokens for Golden SAML attacks" },
+            { type: "Event", indicator: "ADFS Event ID 1007 + 70", description: "Certificate export event on ADFS server — key precursor to Golden SAML token forgery" },
+            { type: "File", indicator: "adfs.pfx", description: "Exported ADFS token-signing certificate used to forge arbitrary SAML assertions for any user" },
+          ],
         },
         {
           id: "lateral-movement",
@@ -146,6 +184,11 @@ const apt29 = {
             ifMissed:
               "Attacker silently reads emails of high-value targets including executives, legal, IT admins. Intelligence collected for months before discovery.",
           },
+          iocs: [
+            { type: "URL", indicator: "https://graph.microsoft.com/v1.0/users/*/messages", description: "Microsoft Graph API endpoint used for mass mailbox access via forged OAuth token" },
+            { type: "Event", indicator: "MailItemsAccessed (O365 Unified Audit Log)", description: "Audit operation logged when mailbox content accessed via Graph API by service principal" },
+            { type: "IP", indicator: "20.140.0[.]65", description: "Azure IP used by APT29 for Graph API access — anomalous source for the service principal" },
+          ],
         },
         {
           id: "persistence",
@@ -180,6 +223,11 @@ const apt29 = {
             ifMissed:
               "Attacker retains access for months/years. Removal of SUNBURST does not evict them. Full re-compromise of Azure AD tenant required.",
           },
+          iocs: [
+            { type: "Service Principal", indicator: "UpdateService (Azure AD)", description: "Malicious backdoor service principal created for persistent cloud access — mimics Windows Update" },
+            { type: "Operation", indicator: "Add service principal credentials (Azure AD Audit)", description: "New credential (secret/certificate) added to existing trusted application for backdoor access" },
+            { type: "Operation", indicator: "Set domain authentication (Azure AD Audit)", description: "New federated identity provider added — allows token forgery without ADFS access" },
+          ],
         },
       ],
     },
