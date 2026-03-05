@@ -9,6 +9,7 @@ export default function Navbar() {
       <div className="flex gap-6 text-sm font-mono">
         <Link to="/" className="text-gray-400 hover:text-green-400 transition-colors">HOME</Link>
         <Link to="/apt" className="text-gray-400 hover:text-green-400 transition-colors">APT LIBRARY</Link>
+        <Link to="/compare" className="text-gray-400 hover:text-purple-400 transition-colors">COMPARE</Link>
         <Link to="/search" className="text-gray-400 hover:text-green-400 transition-colors">SEARCH</Link>
       </div>
     </nav>
