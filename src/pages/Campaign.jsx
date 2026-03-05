@@ -1,10 +1,11 @@
 import { useParams, Link } from 'react-router-dom'
 import { useState, useRef } from 'react'
 import apt29 from '../data/apt/apt29'
+import apt33 from '../data/apt/apt33'
 import apt41 from '../data/apt/apt41'
 import lazarus from '../data/apt/lazarus'
 
-const allAPTs = { apt29, apt41, lazarus }
+const allAPTs = { apt29, apt33, apt41, lazarus }
 
 const PHASE_STYLES = {
   'Initial Access':       { idle: 'border-yellow-800 text-yellow-400 bg-yellow-950/30 hover:bg-yellow-900/40',     active: 'border-yellow-400 text-yellow-200 bg-yellow-900/50' },
