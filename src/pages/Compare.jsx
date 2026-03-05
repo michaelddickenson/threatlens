@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import apt29 from '../data/apt/apt29'
 import apt33 from '../data/apt/apt33'
@@ -13,22 +14,6 @@ const MITRE_TACTICS = [
   'Exfiltration', 'Impact',
 ]
 
-const TACTIC_SHORT = {
-  'Reconnaissance':     'Recon',
-  'Resource Development': 'Res Dev',
-  'Initial Access':     'Init Access',
-  'Execution':          'Execution',
-  'Persistence':        'Persistence',
-  'Privilege Escalation': 'Priv Esc',
-  'Defense Evasion':    'Def Evasion',
-  'Credential Access':  'Cred Access',
-  'Discovery':          'Discovery',
-  'Lateral Movement':   'Lateral Mov',
-  'Collection':         'Collection',
-  'Command & Control':  'C2',
-  'Exfiltration':       'Exfiltration',
-  'Impact':             'Impact',
-}
 
 function getAllStages(apt) {
   return apt.campaigns.flatMap(c => c.stages)
@@ -68,6 +53,14 @@ export default function Compare() {
   const { aptId1, aptId2 } = useParams()
   const apt1 = aptId1 ? allAPTs[aptId1] : null
   const apt2 = aptId2 ? allAPTs[aptId2] : null
+  const [copied, setCopied] = useState(false)
+
+  function handleShare() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
 
   if (!apt1 || !apt2) {
     return (
@@ -125,13 +118,25 @@ export default function Compare() {
   return (
     <div className="max-w-[1400px] mx-auto px-4 py-8 font-mono">
 
-      {/* Breadcrumb */}
-      <div className="text-xs text-gray-600 mb-4">
-        <Link to="/apt" className="hover:text-green-400 transition-colors">APT LIBRARY</Link>
-        <span className="mx-2">›</span>
-        <span className="text-purple-400">COMPARE</span>
-        <span className="mx-2">›</span>
-        <span className="text-gray-400">{apt1.name} vs {apt2.name}</span>
+      {/* Breadcrumb + Share */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="text-xs text-gray-600">
+          <Link to="/apt" className="hover:text-green-400 transition-colors">APT LIBRARY</Link>
+          <span className="mx-2">›</span>
+          <span className="text-purple-400">COMPARE</span>
+          <span className="mx-2">›</span>
+          <span className="text-gray-400">{apt1.name} vs {apt2.name}</span>
+        </div>
+        <button
+          onClick={handleShare}
+          className={`flex items-center gap-2 px-3 py-1.5 text-xs rounded border transition-colors font-mono ${
+            copied
+              ? 'border-green-600 bg-green-950/40 text-green-400'
+              : 'border-gray-700 text-gray-500 hover:border-purple-600 hover:text-purple-400'
+          }`}
+        >
+          {copied ? '✓ Link Copied!' : '⎘ Share Comparison'}
+        </button>
       </div>
 
       {/* ── Header ── */}
@@ -230,19 +235,19 @@ export default function Compare() {
             return (
               <div
                 key={tactic}
-                className={`relative flex-1 min-w-[72px] flex flex-col items-center px-1 pt-4 pb-3 text-center ${
+                className={`relative flex-1 min-w-[80px] flex flex-col items-center px-2 pt-4 pb-3 text-center ${
                   idx < MITRE_TACTICS.length - 1 ? 'border-r border-gray-800' : ''
                 } ${bg}`}
               >
                 <div className={`absolute top-0 inset-x-0 h-[3px] ${stripe}`} />
-                <div className={`text-[11px] font-bold mb-1.5 leading-none ${numColor}`}>
+                <div className={`text-[11px] font-bold mb-2 leading-none ${numColor}`}>
                   {in1 || in2
                     ? <span>{in1 ? c1 : '—'}<span className="opacity-30 mx-px">/</span>{in2 ? c2 : '—'}</span>
                     : <span>—</span>
                   }
                 </div>
-                <div className={`text-[10px] leading-tight ${labelColor}`}>
-                  {TACTIC_SHORT[tactic] || tactic}
+                <div className={`text-xs leading-tight ${labelColor}`}>
+                  {tactic}
                 </div>
               </div>
             )
