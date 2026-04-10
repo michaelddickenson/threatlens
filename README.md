@@ -1,16 +1,103 @@
-# React + Vite
+# ThreatLens
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An interactive cybersecurity threat intelligence platform for exploring real-world APT (Advanced Persistent Threat) campaigns from both attacker and defender perspectives. Built as a portfolio project and personal CTI research tool.
 
-Currently, two official plugins are available:
+**Live Site:** https://michaelddickenson.github.io/threatlens
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## What It Does
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+ThreatLens lets you walk through documented nation-state cyber attacks stage by stage, toggling between the attacker's perspective and the blue team's view. Every technique is mapped to the MITRE ATT&CK framework.
 
-## Expanding the ESLint configuration
+**For each campaign you can explore:**
+- **Attacker View** — what the threat actor did, tools used, real commands and indicators
+- **Defender View** — logs generated, SIEM detection queries, detection guidance
+- **IOC Table** — all indicators of compromise across every stage (domains, hashes, IPs, registry keys)
+- **Intelligence Tab** — Diamond Intrusion Model with Adversary, Capability, Infrastructure, and Victim vertices populated with real campaign data
+- **Kill Chain Timeline** — horizontal progression through all attack stages with phase color coding
+- **Kill Chain Heatmap** — visual fingerprint showing which of the 14 MITRE ATT&CK tactics were used
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## APT Groups & Campaigns
+
+| Actor | Origin | Motivation | Campaigns |
+|-------|--------|------------|-----------|
+| APT29 (Cozy Bear / NOBELIUM) | Russia | Espionage | SolarWinds Supply Chain Attack (2020), USAID Phishing Campaign (2021) |
+| APT33 (Elfin / HOLMIUM) | Iran | Espionage / Destructive | Operation Shamoon Revival (2016-2018), Aviation & Defense Targeting (2017-2019) |
+| APT41 (Winnti / Double Dragon) | China | Espionage / Financial | Operation CuckooBees (2022) |
+| Lazarus Group (Hidden Cobra) | North Korea | Financial / Espionage | Operation AppleJeus (2018-present) |
+
+All campaign data is sourced from published threat intelligence reports including CISA advisories, Mandiant research, Microsoft MSTIC, and US-CERT alerts.
+
+---
+
+## Features
+
+- **APT Library** — browse all threat actors, filter by origin country
+- **Campaign Explorer** — stage-by-stage attack walkthrough with attacker/defender toggle
+- **Threat Actor Comparison Mode** — select any two APTs for side-by-side analysis including shared kill chain heatmap, TTP overlap table, Diamond Model comparison, and auto-generated key differences
+- **Real-time Search** — search across all APTs, campaigns, stage names, and TTP IDs
+- **MITRE ATT&CK Integration** — every TTP badge links directly to the official MITRE ATT&CK page
+- **Diamond Intrusion Model** — rendered as a proper diamond layout with SVG connecting lines and real campaign data at each vertex
+- **IOC Tables** — 15+ indicators per campaign including file hashes, C2 domains, IPs, tools, and event IDs
+
+---
+
+## Tech Stack
+
+- **React + Vite** — component-based UI with fast dev/build pipeline
+- **Tailwind CSS v3** — utility-first styling with dark terminal aesthetic
+- **React Router** — client-side routing between APT library, campaigns, compare, and search
+- **GitHub Pages** — free static hosting via gh-pages
+
+---
+
+## Project Structure
+
+src/
+├── components/
+│   └── Navbar.jsx
+├── data/apt/
+│   ├── apt29.js        # APT29 — Russia
+│   ├── apt33.js        # APT33 — Iran
+│   ├── apt41.js        # APT41 — China
+│   └── lazarus.js      # Lazarus Group — North Korea
+├── pages/
+│   ├── Home.jsx
+│   ├── APTLibrary.jsx
+│   ├── Campaign.jsx
+│   ├── Compare.jsx
+│   └── Search.jsx
+
+---
+
+## Running Locally
+
+git clone https://github.com/michaelddickenson/threatlens.git
+cd threatlens
+npm install
+npm run dev
+
+Open http://localhost:5173
+
+---
+
+## Roadmap
+
+- [ ] PDF export for campaign reports
+- [ ] Additional APT groups (Sandworm, Volt Typhoon, Scattered Spider)
+- [ ] About / methodology page
+- [ ] Detection scoring per campaign
+- [ ] Mobile layout optimization
+
+---
+
+## Disclaimer
+
+All data in ThreatLens is sourced from publicly available threat intelligence reports and MITRE ATT&CK documentation. This tool is for educational and research purposes only. IOCs and commands are presented in defanged format where applicable.
+
+---
+
+*Built with React + Vite + Tailwind CSS. Deployed on GitHub Pages.*
