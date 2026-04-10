@@ -20,19 +20,6 @@ ThreatLens lets you walk through documented nation-state cyber attacks stage by 
 
 ---
 
-## APT Groups & Campaigns
-
-| Actor | Origin | Motivation | Campaigns |
-|-------|--------|------------|-----------|
-| APT29 (Cozy Bear / NOBELIUM) | Russia | Espionage | SolarWinds Supply Chain Attack (2020), USAID Phishing Campaign (2021) |
-| APT33 (Elfin / HOLMIUM) | Iran | Espionage / Destructive | Operation Shamoon Revival (2016-2018), Aviation & Defense Targeting (2017-2019) |
-| APT41 (Winnti / Double Dragon) | China | Espionage / Financial | Operation CuckooBees (2022) |
-| Lazarus Group (Hidden Cobra) | North Korea | Financial / Espionage | Operation AppleJeus (2018-present) |
-
-All campaign data is sourced from published threat intelligence reports including CISA advisories, Mandiant research, Microsoft MSTIC, and US-CERT alerts.
-
----
-
 ## Features
 
 - **APT Library** — browse all threat actors, filter by origin country
