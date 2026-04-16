@@ -15,9 +15,9 @@ const apt41 = {
       summary:
         "APT41 conducted a decade-long stealth espionage campaign targeting pharmaceutical, manufacturing, and defense companies across North America, Europe, and Asia — stealing hundreds of gigabytes of IP including drug formulas, proprietary research, and defense blueprints.",
       sources: [
-        "Cybereason Operation CuckooBees Report (2022)",
-        "CISA Advisory AA22-279A",
-        "Mandiant APT41 Profile",
+        { title: "Operation CuckooBees: A Winnti Malware Arsenal Deep-Dive", publisher: "Cybereason Nocturnus", url: "https://www.cybereason.com/blog/operation-cuckoobees-deep-dive-into-stealthy-winnti-techniques" },
+        { title: "CISA Advisory AA22-158A — PRC State-Sponsored Cyber Actors Exploit Network Providers and Devices", publisher: "CISA / NSA / FBI", url: "https://www.cisa.gov/news-events/cybersecurity-advisories/aa22-158a" },
+        { title: "APT41: A Dual Espionage and Cyber Crime Operation", publisher: "Mandiant", url: "https://www.mandiant.com/resources/blog/apt41-dual-espionage-and-cyber-crime-operation" },
       ],
       diamondModel: {
         adversary: {

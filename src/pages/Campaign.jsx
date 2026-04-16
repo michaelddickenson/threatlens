@@ -4,8 +4,11 @@ import apt29 from '../data/apt/apt29'
 import apt33 from '../data/apt/apt33'
 import apt41 from '../data/apt/apt41'
 import lazarus from '../data/apt/lazarus'
+import sandworm from '../data/apt/sandworm'
+import volttyphoon from '../data/apt/volttyphoon'
+import scatteredspider from '../data/apt/scatteredspider'
 
-const allAPTs = { apt29, apt33, apt41, lazarus }
+const allAPTs = { apt29, apt33, apt41, lazarus, sandworm, volttyphoon, scatteredspider }
 
 const PHASE_STYLES = {
   'Initial Access':       { idle: 'border-yellow-800 text-yellow-400 bg-yellow-950/30 hover:bg-yellow-900/40',     active: 'border-yellow-400 text-yellow-200 bg-yellow-900/50' },
@@ -80,6 +83,15 @@ export default function Campaign() {
     (s.iocs || []).map(ioc => ({ ...ioc, stageName: s.name }))
   )
 
+  // Normalise sources — support both plain strings and {title, publisher, url} objects
+  const normSources = (campaign.sources || []).map(s =>
+    typeof s === 'string' ? { title: s, publisher: null, url: null } : s
+  )
+
+  function handleExportPDF() {
+    window.print()
+  }
+
   // Count techniques per MITRE tactic
   const tacticCounts = {}
   for (const s of campaign.stages) {
@@ -107,7 +119,7 @@ export default function Campaign() {
     <div className="max-w-[1400px] mx-auto px-4 py-8 font-mono">
 
       {/* Breadcrumb */}
-      <div className="text-xs text-gray-600 mb-4">
+      <div className="no-print text-xs text-gray-600 mb-4">
         <Link to="/apt" className="hover:text-green-400 transition-colors">APT LIBRARY</Link>
         <span className="mx-2">›</span>
         <span className="text-gray-400">{apt.name}</span>
@@ -116,24 +128,68 @@ export default function Campaign() {
       </div>
 
       {/* Campaign Header — compact */}
-      <div className="border border-gray-800 bg-gray-900 rounded-lg px-5 py-4 mb-4">
-        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 mb-2">
-          <h2 className="text-xl font-bold text-white">{campaign.name}</h2>
-          <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
-            <span className="text-green-400">{apt.name}</span>
-            <span>·</span>
-            <span>{campaign.year}</span>
-            <span>·</span>
-            <span>{campaign.target}</span>
-            <span>·</span>
-            <span className="text-gray-600">{campaign.sources[0]}</span>
+      <div className="no-print border border-gray-800 bg-gray-900 rounded-lg px-5 py-4 mb-4">
+        <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2 mb-2">
+          <div className="flex flex-wrap items-baseline gap-x-6 gap-y-1">
+            <h2 className="text-xl font-bold text-white">{campaign.name}</h2>
+            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+              <span className="text-green-400">{apt.name}</span>
+              <span>·</span>
+              <span>{campaign.year}</span>
+              <span>·</span>
+              <span>{campaign.target}</span>
+              {normSources[0] && (
+                <>
+                  <span>·</span>
+                  <span className="text-gray-600">{normSources[0].title}</span>
+                </>
+              )}
+            </div>
           </div>
+          <button
+            onClick={handleExportPDF}
+            className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-xs border border-gray-700 text-gray-500 hover:border-green-600 hover:text-green-400 rounded transition-colors"
+            title="Export campaign report as PDF"
+          >
+            ⬇ Export PDF
+          </button>
         </div>
         <p className="text-gray-400 text-sm leading-relaxed">{campaign.summary}</p>
       </div>
 
+      {/* ── Intelligence Sources Panel ── */}
+      <div className="no-print border border-gray-800 bg-gray-900/50 rounded-lg px-5 py-3 mb-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-gray-600 uppercase tracking-widest mr-2 shrink-0">Sources:</span>
+          {normSources.map((src, i) => (
+            src.url ? (
+              <a
+                key={i}
+                href={src.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs border border-gray-700 bg-gray-800/60 text-gray-400 hover:border-green-600 hover:text-green-300 px-2.5 py-1 rounded transition-colors"
+                title={src.title}
+              >
+                {src.publisher && <span className="text-green-500/70 font-bold shrink-0">{src.publisher}</span>}
+                {src.publisher && <span className="text-gray-700">·</span>}
+                <span className="truncate max-w-[200px]">{src.title}</span>
+                <span className="text-gray-600 shrink-0">↗</span>
+              </a>
+            ) : (
+              <span
+                key={i}
+                className="inline-flex items-center gap-1.5 text-xs border border-gray-700 bg-gray-800/60 text-gray-500 px-2.5 py-1 rounded"
+              >
+                {src.title}
+              </span>
+            )
+          ))}
+        </div>
+      </div>
+
       {/* ── Kill Chain Coverage Heatmap — always visible ── */}
-      <div className="border border-gray-800 rounded-lg overflow-hidden mb-4">
+      <div className="no-print border border-gray-800 rounded-lg overflow-hidden mb-4">
         <div className="px-4 py-2 border-b border-gray-800 flex items-center justify-between">
           <p className="text-xs text-gray-600 uppercase tracking-widest">Kill Chain Coverage</p>
           <p className="text-xs text-gray-700">
@@ -169,7 +225,7 @@ export default function Campaign() {
       </div>
 
       {/* View Mode Tabs */}
-      <div className="flex flex-wrap items-center gap-2 mb-4">
+      <div className="no-print flex flex-wrap items-center gap-2 mb-4">
         <span className="text-xs text-gray-500 mr-1">VIEW:</span>
         {tabBtn('attacker',     '⚔ ATTACKER',    'bg-red-900 border-red-500 text-red-300',         'border-gray-700 text-gray-500 hover:border-red-700 hover:text-red-400')}
         {tabBtn('defender',     '🛡 DEFENDER',    'bg-blue-900 border-blue-500 text-blue-300',       'border-gray-700 text-gray-500 hover:border-blue-700 hover:text-blue-400')}
@@ -179,7 +235,7 @@ export default function Campaign() {
 
       {/* ── ATTACKER / DEFENDER — 2-column: vertical timeline | stage detail ── */}
       {(view === 'attacker' || view === 'defender') && (
-        <div ref={contentRef} className="grid grid-cols-1 lg:grid-cols-[15rem_1fr] gap-4">
+        <div ref={contentRef} className="no-print grid grid-cols-1 lg:grid-cols-[15rem_1fr] gap-4">
 
           {/* Left: Vertical Kill Chain Timeline */}
           <div className="border border-gray-800 bg-gray-900 rounded-lg p-4">
@@ -295,7 +351,7 @@ export default function Campaign() {
 
       {/* ── IOC view ── */}
       {view === 'ioc' && (
-        <div className="border border-gray-800 bg-gray-900 rounded-lg p-5">
+        <div className="no-print border border-gray-800 bg-gray-900 rounded-lg p-5">
           <div className="mb-5">
             <p className="text-xs text-gray-600 uppercase tracking-widest mb-1">// indicators of compromise</p>
             <h3 className="text-sm font-bold text-white tracking-widest">
@@ -336,7 +392,7 @@ export default function Campaign() {
 
       {/* ── INTELLIGENCE — Diamond Intrusion Model ── */}
       {view === 'intelligence' && (
-        <div className="border border-gray-800 bg-gray-900 rounded-lg p-5">
+        <div className="no-print border border-gray-800 bg-gray-900 rounded-lg p-5">
           <div className="mb-8">
             <p className="text-xs text-gray-600 uppercase tracking-widest mb-1">// intelligence analysis</p>
             <h3 className="text-sm font-bold text-white tracking-widest">DIAMOND INTRUSION MODEL</h3>
@@ -418,7 +474,7 @@ export default function Campaign() {
       )}
 
       {/* MITRE ATT&CK TTP Navigator Panel */}
-      <div className="mt-6 border border-gray-800 bg-gray-900 rounded-lg p-5">
+      <div className="no-print mt-6 border border-gray-800 bg-gray-900 rounded-lg p-5">
         <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
           <div>
             <p className="text-xs text-gray-600 uppercase tracking-widest mb-1">// mitre att&ck coverage</p>
@@ -450,6 +506,157 @@ export default function Campaign() {
             )
           })}
         </div>
+      </div>
+
+      {/* ── Print-only PDF Report — hidden on screen, rendered when printing ── */}
+      <div className="print-only" style={{ fontFamily: 'monospace', fontSize: '11pt', color: '#000', lineHeight: 1.5 }}>
+
+        {/* Report header */}
+        <div style={{ borderBottom: '2px solid #000', paddingBottom: '10pt', marginBottom: '14pt' }}>
+          <div style={{ fontSize: '8pt', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '4pt' }}>
+            ThreatLens — Campaign Intelligence Report &nbsp;·&nbsp; Generated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+          </div>
+          <div className="print-heading" style={{ fontSize: '18pt', fontWeight: 'bold', marginBottom: '3pt' }}>{campaign.name}</div>
+          <div style={{ fontSize: '11pt', marginBottom: '6pt' }}>
+            {apt.name} &nbsp;·&nbsp; {campaign.year} &nbsp;·&nbsp; {campaign.target}
+          </div>
+          <div style={{ fontSize: '11pt', lineHeight: 1.6 }}>{campaign.summary}</div>
+        </div>
+
+        {/* Attack Chain + Defender Detection per stage */}
+        <div style={{ marginBottom: '20pt' }}>
+          <div className="print-heading" style={{ fontSize: '14pt', fontWeight: 'bold', borderBottom: '1px solid #000', paddingBottom: '3pt', marginBottom: '10pt' }}>
+            ATTACK CHAIN &amp; DETECTION — {campaign.stages.length} STAGES
+          </div>
+
+          {campaign.stages.map((s, i) => (
+            <div key={s.id} style={{ marginBottom: '16pt', paddingLeft: '10pt', borderLeft: '3px solid #555', pageBreakInside: 'avoid' }}>
+
+              {/* Stage heading */}
+              <div style={{ fontWeight: 'bold', fontSize: '12pt', marginBottom: '3pt' }}>
+                {i + 1}. {s.name}
+                <span style={{ fontWeight: 'normal', fontSize: '10pt', marginLeft: '8pt' }}>
+                  [{s.ttp} — {s.ttpName} · {s.phase}]
+                </span>
+              </div>
+
+              {/* ── ATTACKER ── */}
+              <div style={{ fontSize: '9pt', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '3pt', marginTop: '6pt', borderBottom: '1px solid #bbb', paddingBottom: '2pt' }}>
+                ⚔ Attacker
+              </div>
+              <div style={{ fontSize: '10pt', lineHeight: 1.5, marginBottom: '4pt' }}>{s.attacker.summary}</div>
+              <div style={{ fontSize: '9.5pt', marginBottom: '3pt' }}>
+                <strong>Tools:</strong> {s.attacker.tools.join(', ')}
+              </div>
+              {s.attacker.commands.length > 0 && (
+                <div className="print-code" style={{ background: '#f5f5f5', border: '1px solid #bbb', borderRadius: '2pt', padding: '5pt', fontSize: '8.5pt', fontFamily: 'monospace', marginBottom: '4pt' }}>
+                  {s.attacker.commands.map((cmd, ci) => (
+                    <div key={ci}>{cmd}</div>
+                  ))}
+                </div>
+              )}
+
+              {/* ── DEFENDER NOTES ── */}
+              <div style={{ fontSize: '9pt', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '3pt', marginTop: '8pt', borderBottom: '1px solid #bbb', paddingBottom: '2pt' }}>
+                🛡 Defender Notes
+              </div>
+
+              {/* Logs */}
+              <div style={{ fontSize: '9.5pt', fontWeight: 'bold', marginBottom: '2pt' }}>Logs Generated:</div>
+              <ul style={{ margin: '0 0 6pt 0', padding: '0 0 0 14pt', fontSize: '9.5pt', lineHeight: 1.5 }}>
+                {s.defender.logs.map((log, li) => (
+                  <li key={li}>{log}</li>
+                ))}
+              </ul>
+
+              {/* Detection */}
+              <div style={{ fontSize: '9.5pt', fontWeight: 'bold', marginBottom: '2pt' }}>Detection Guidance:</div>
+              <div style={{ fontSize: '9.5pt', lineHeight: 1.5, marginBottom: '6pt' }}>{s.defender.detection}</div>
+
+              {/* SIEM Query */}
+              <div style={{ fontSize: '9.5pt', fontWeight: 'bold', marginBottom: '2pt' }}>SIEM Query:</div>
+              <div className="print-code" style={{ background: '#f5f5f5', border: '1px solid #bbb', borderRadius: '2pt', padding: '5pt', fontSize: '8pt', fontFamily: 'monospace', wordBreak: 'break-all' }}>
+                {s.defender.siemQuery}
+              </div>
+
+            </div>
+          ))}
+        </div>
+
+        {/* IOC Table */}
+        <div style={{ marginBottom: '20pt', pageBreakBefore: 'always' }}>
+          <div className="print-heading" style={{ fontSize: '14pt', fontWeight: 'bold', borderBottom: '1px solid #000', paddingBottom: '3pt', marginBottom: '10pt' }}>
+            INDICATORS OF COMPROMISE — {allIOCs.length} TOTAL
+          </div>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '9pt' }}>
+            <thead>
+              <tr style={{ background: '#f0f0f0' }}>
+                <th style={{ textAlign: 'left', padding: '4pt 6pt', fontWeight: 'bold', border: '1px solid #555', width: '80pt' }}>Type</th>
+                <th style={{ textAlign: 'left', padding: '4pt 6pt', fontWeight: 'bold', border: '1px solid #555', width: '160pt' }}>Indicator</th>
+                <th style={{ textAlign: 'left', padding: '4pt 6pt', fontWeight: 'bold', border: '1px solid #555' }}>Description</th>
+                <th style={{ textAlign: 'left', padding: '4pt 6pt', fontWeight: 'bold', border: '1px solid #555', width: '90pt' }}>Stage</th>
+              </tr>
+            </thead>
+            <tbody>
+              {allIOCs.map((ioc, i) => (
+                <tr key={i} style={{ pageBreakInside: 'avoid' }}>
+                  <td style={{ padding: '3pt 6pt', fontFamily: 'monospace', fontSize: '8pt', border: '1px solid #777', verticalAlign: 'top' }}>{ioc.type}</td>
+                  <td style={{ padding: '3pt 6pt', fontFamily: 'monospace', fontSize: '8pt', wordBreak: 'break-all', border: '1px solid #777', verticalAlign: 'top' }}>{ioc.indicator}</td>
+                  <td style={{ padding: '3pt 6pt', fontSize: '8.5pt', lineHeight: 1.4, border: '1px solid #777', verticalAlign: 'top' }}>{ioc.description}</td>
+                  <td style={{ padding: '3pt 6pt', fontSize: '8pt', border: '1px solid #777', verticalAlign: 'top' }}>{ioc.stageName}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Diamond Model */}
+        {dm && (
+          <div style={{ marginBottom: '20pt' }}>
+            <div className="print-heading" style={{ fontSize: '14pt', fontWeight: 'bold', borderBottom: '1px solid #000', paddingBottom: '3pt', marginBottom: '10pt' }}>
+              DIAMOND INTRUSION MODEL
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10pt', fontSize: '10pt' }}>
+              <div style={{ border: '1px solid #888', borderRadius: '3pt', padding: '8pt' }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '4pt' }}>◆ Adversary</div>
+                <div style={{ fontWeight: 'bold', marginBottom: '2pt' }}>{dm.adversary.name}</div>
+                <div style={{ marginBottom: '2pt' }}>{dm.adversary.sponsor}</div>
+                <div style={{ fontSize: '9pt', marginBottom: '2pt' }}>Aliases: {dm.adversary.aliases.join(' · ')}</div>
+                <div style={{ fontSize: '9pt', fontStyle: 'italic', marginTop: '4pt' }}>{dm.adversary.motivation}</div>
+              </div>
+              <div style={{ border: '1px solid #888', borderRadius: '3pt', padding: '8pt' }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '4pt' }}>◆ Capability</div>
+                <div style={{ marginBottom: '4pt' }}>{dm.capability.malware.join(', ')}</div>
+                <div style={{ fontSize: '9pt' }}>{dm.capability.sophistication}</div>
+              </div>
+              <div style={{ border: '1px solid #888', borderRadius: '3pt', padding: '8pt' }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '4pt' }}>◆ Infrastructure</div>
+                <div style={{ fontFamily: 'monospace', fontSize: '9pt', marginBottom: '4pt' }}>{dm.infrastructure.domains.slice(0, 4).join(' · ')}</div>
+                <div style={{ fontSize: '9pt' }}>{dm.infrastructure.hosting}</div>
+              </div>
+              <div style={{ border: '1px solid #888', borderRadius: '3pt', padding: '8pt' }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '4pt' }}>◆ Victim</div>
+                <div style={{ marginBottom: '4pt' }}>{dm.victim.sectors}</div>
+                <div style={{ fontSize: '9pt' }}>{dm.victim.geography}</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Sources */}
+        <div>
+          <div className="print-heading" style={{ fontSize: '14pt', fontWeight: 'bold', borderBottom: '1px solid #000', paddingBottom: '3pt', marginBottom: '8pt' }}>
+            INTELLIGENCE SOURCES
+          </div>
+          <ul style={{ margin: 0, padding: '0 0 0 14pt', fontSize: '9.5pt', lineHeight: 1.6 }}>
+            {normSources.map((src, i) => (
+              <li key={i}>
+                {src.title}{src.publisher ? ` — ${src.publisher}` : ''}{src.url ? ` · ${src.url}` : ''}
+              </li>
+            ))}
+          </ul>
+        </div>
+
       </div>
 
     </div>

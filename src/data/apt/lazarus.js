@@ -15,9 +15,9 @@ const lazarus = {
       summary:
         "Lazarus Group targeted cryptocurrency exchange employees with trojanized trading software, deploying the FALLCHILL RAT and ELECTRICFISH tunneling tool to steal private keys, exchange API credentials, and drain crypto hot wallets — with linked losses exceeding $400M.",
       sources: [
-        "US-CERT Alert TA18-106A (FALLCHILL)",
-        "Kaspersky Operation AppleJeus Report (2018)",
-        "CISA Advisory AA21-048A",
+        { title: "US-CERT Alert TA18-106A — Hidden Cobra: FASTCash Campaign & FALLCHILL Malware", publisher: "US-CERT / CISA", url: "https://www.cisa.gov/news-events/alerts/2018/04/13/north-korea-cyber-activity" },
+        { title: "Operation AppleJeus: Lazarus Hits Cryptocurrency Exchange with macOS Backdoor", publisher: "Kaspersky", url: "https://securelist.com/operation-applejeus/87553/" },
+        { title: "CISA Advisory AA21-048A — AppleJeus: Analysis of North Korea's Cryptocurrency Malware", publisher: "CISA / FBI", url: "https://www.cisa.gov/news-events/cybersecurity-advisories/aa21-048a" },
       ],
       diamondModel: {
         adversary: {

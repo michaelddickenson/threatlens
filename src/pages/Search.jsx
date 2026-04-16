@@ -4,8 +4,11 @@ import apt29 from '../data/apt/apt29'
 import apt33 from '../data/apt/apt33'
 import apt41 from '../data/apt/apt41'
 import lazarus from '../data/apt/lazarus'
+import sandworm from '../data/apt/sandworm'
+import volttyphoon from '../data/apt/volttyphoon'
+import scatteredspider from '../data/apt/scatteredspider'
 
-const allAPTs = [apt29, apt33, apt41, lazarus]
+const allAPTs = [apt29, apt33, apt41, lazarus, sandworm, volttyphoon, scatteredspider]
 
 // Build flat searchable index at module level (runs once)
 const INDEX = []

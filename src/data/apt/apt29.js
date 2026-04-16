@@ -15,9 +15,9 @@ const apt29 = {
       summary:
         "APT29 compromised SolarWinds' Orion build pipeline to distribute a backdoored update (SUNBURST) to ~18,000 organizations, enabling stealthy long-term espionage.",
       sources: [
-        "CISA Alert AA20-352A",
-        "Mandiant UNC2452 Report",
-        "Microsoft MSTIC Analysis",
+        { title: "CISA Alert AA20-352A — Advanced Persistent Threat Compromise of Government Agencies", publisher: "CISA", url: "https://www.cisa.gov/news-events/cybersecurity-advisories/aa20-352a" },
+        { title: "Highly Evasive Attacker Leverages SolarWinds Supply Chain to Compromise Multiple Global Victims (SUNBURST)", publisher: "Mandiant", url: "https://www.mandiant.com/resources/blog/evasive-attacker-leverages-solarwinds-supply-chain-compromises-with-sunburst-backdoor" },
+        { title: "Analyzing Solorigate — the Compromised DLL that Started a Sophisticated Cyberattack", publisher: "Microsoft MSTIC", url: "https://www.microsoft.com/en-us/security/blog/2020/12/18/analyzing-solorigate-the-compromised-dll-file-that-started-a-sophisticated-cyberattack-and-how-microsoft-defender-helps-protect/" },
       ],
       diamondModel: {
         adversary: {
@@ -239,9 +239,9 @@ const apt29 = {
       summary:
         "Following the SolarWinds disclosure, APT29 pivoted to large-scale spearphishing impersonating the US Agency for International Development (USAID), targeting over 3,000 accounts across 150 organizations — including human rights groups, think tanks, and government agencies — to maintain espionage access after SolarWinds-era footholds were burned.",
       sources: [
-        "Microsoft MSTIC NOBELIUM Report (May 2021)",
-        "CISA Alert AA21-148A",
-        "Volexity Report: NOBELIUM Spearphishing (2021)",
+        { title: "New Sophisticated Email-Based Attack from NOBELIUM", publisher: "Microsoft MSTIC", url: "https://www.microsoft.com/en-us/security/blog/2021/05/27/new-sophisticated-email-based-attack-from-nobelium/" },
+        { title: "CISA Alert AA21-148A — Sophisticated Spearphishing Campaign Targets Government Organizations, IGOs, and NGOs", publisher: "CISA", url: "https://www.cisa.gov/news-events/cybersecurity-advisories/aa21-148a" },
+        { title: "Suspected APT29 Operation Launches Election Fraud Themed Phishing Campaigns", publisher: "Volexity", url: "https://www.volexity.com/blog/2021/05/27/suspected-apt29-operation-launches-election-fraud-themed-phishing-campaigns/" },
       ],
       diamondModel: {
         adversary: {

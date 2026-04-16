@@ -4,8 +4,11 @@ import apt29 from '../data/apt/apt29'
 import apt33 from '../data/apt/apt33'
 import apt41 from '../data/apt/apt41'
 import lazarus from '../data/apt/lazarus'
+import sandworm from '../data/apt/sandworm'
+import volttyphoon from '../data/apt/volttyphoon'
+import scatteredspider from '../data/apt/scatteredspider'
 
-const allAPTs = { apt29, apt33, apt41, lazarus }
+const allAPTs = { apt29, apt33, apt41, lazarus, sandworm, volttyphoon, scatteredspider }
 
 const MITRE_TACTICS = [
   'Reconnaissance', 'Resource Development', 'Initial Access', 'Execution',
@@ -47,6 +50,7 @@ const ORIGIN_COLORS = {
   'China':       'border-yellow-800 text-yellow-400',
   'Iran':        'border-orange-800 text-orange-400',
   'North Korea': 'border-blue-800 text-blue-400',
+  'Western':     'border-pink-800 text-pink-400',
 }
 
 export default function Compare() {

@@ -4,8 +4,11 @@ import apt29 from '../data/apt/apt29'
 import apt33 from '../data/apt/apt33'
 import apt41 from '../data/apt/apt41'
 import lazarus from '../data/apt/lazarus'
+import sandworm from '../data/apt/sandworm'
+import volttyphoon from '../data/apt/volttyphoon'
+import scatteredspider from '../data/apt/scatteredspider'
 
-const allAPTs = [apt29, apt33, apt41, lazarus]
+const allAPTs = [apt29, apt33, apt41, lazarus, sandworm, volttyphoon, scatteredspider]
 
 const totalCampaigns = allAPTs.reduce((sum, apt) => sum + apt.campaigns.length, 0)
 const totalTechniques = allAPTs.reduce((sum, apt) =>
@@ -52,9 +55,25 @@ function useTypewriter(words, typingSpeed = 80, deletingSpeed = 40, pauseTime = 
   return displayText
 }
 
-const featuredCampaigns = allAPTs.flatMap(apt =>
-  apt.campaigns.map(c => ({ ...c, aptId: apt.id, aptName: apt.name }))
-)
+// Hardcoded order: 6 most recently added campaigns, newest first
+const FEATURED_ORDER = [
+  { aptId: 'scatteredspider', campaignId: 'mgm-ransomware-2023' },
+  { aptId: 'volttyphoon',     campaignId: 'us-critical-infrastructure-2021' },
+  { aptId: 'sandworm',        campaignId: 'notpetya-2017' },
+  { aptId: 'apt29',           campaignId: 'usaid-phishing-2021' },
+  { aptId: 'apt33',           campaignId: 'aviation-defense-2017' },
+  { aptId: 'apt41',           campaignId: 'cuckoo-bees-2022' },
+]
+
+const aptById = Object.fromEntries(allAPTs.map(a => [a.id, a]))
+
+const featuredCampaigns = FEATURED_ORDER.flatMap(({ aptId, campaignId }) => {
+  const apt = aptById[aptId]
+  if (!apt) return []
+  const campaign = apt.campaigns.find(c => c.id === campaignId)
+  if (!campaign) return []
+  return [{ ...campaign, aptId: apt.id, aptName: apt.name }]
+})
 
 export default function Home() {
   const displayText = useTypewriter(THREAT_ACTORS)

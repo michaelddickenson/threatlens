@@ -15,9 +15,9 @@ const apt33 = {
       summary:
         "APT33 orchestrated a wave of destructive Shamoon (DistTrack) wiper attacks against Saudi Aramco, SABIC, and multiple Gulf state government agencies — destroying tens of thousands of endpoints and erasing critical energy infrastructure data as a geopolitical warning.",
       sources: [
-        "Symantec Elfin APT33 Report (2019)",
-        "FireEye APT33 Intelligence Report (2017)",
-        "CISA Alert AA20-296A",
+        { title: "Elfin: Relentless Espionage Group Targets Multiple Organizations in Saudi Arabia and U.S.", publisher: "Symantec Threat Intelligence", url: "https://symantec-enterprise-blogs.security.com/blogs/threat-intelligence/elfin-apt33-espionage" },
+        { title: "Insights into Iranian Cyber Espionage: APT33 Targets Aerospace and Energy Sectors and Has Ties to Destructive Malware", publisher: "Mandiant (FireEye)", url: "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage" },
+        { title: "ICS-CERT Advisory ICSA-17-099-02 — Shamoon Destructive Malware", publisher: "CISA / ICS-CERT", url: "https://www.cisa.gov/news-events/ics-advisories/icsa-17-099-02" },
       ],
       diamondModel: {
         adversary: {
@@ -246,9 +246,9 @@ const apt33 = {
       summary:
         "APT33 conducted a sustained espionage campaign against US and Saudi aerospace and defense contractors — including Boeing, Raytheon, Lockheed Martin, and Saudi defense entities — using LinkedIn-based spearphishing and credential harvesting portals to steal proprietary aviation engineering data and defense contract intelligence.",
       sources: [
-        "FireEye APT33 Intelligence Report (2017)",
-        "Microsoft MSTIC HOLMIUM Profile (2019)",
-        "FBI Flash CU-000135-MW",
+        { title: "Insights into Iranian Cyber Espionage: APT33 Targets Aerospace and Energy Sectors", publisher: "Mandiant (FireEye)", url: "https://www.mandiant.com/resources/blog/apt33-insights-into-iranian-cyber-espionage" },
+        { title: "HOLMIUM Targeting Aerospace, Defense, and Petrochemical Industries", publisher: "Microsoft Security", url: "https://www.microsoft.com/en-us/security/blog/2021/11/16/evolving-trends-in-iranian-threat-actor-activity-mstic-presentation-at-cyberwarcon-2021/" },
+        { title: "FBI Flash CU-000135-MW — Iranian Government-Sponsored APT Cyber Actions", publisher: "FBI / CISA", url: "https://www.cisa.gov/news-events/cybersecurity-advisories/aa21-321a" },
       ],
       diamondModel: {
         adversary: {
