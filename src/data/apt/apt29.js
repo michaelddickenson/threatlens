@@ -4,6 +4,7 @@ const apt29 = {
   aliases: ["Cozy Bear", "Midnight Blizzard", "The Dukes"],
   origin: "Russia",
   motivation: "Espionage",
+  attribution: "Formally Attributed",
   description:
     "APT29 is a sophisticated Russian state-sponsored threat actor attributed to the SVR (Foreign Intelligence Service). Known for stealthy, long-term intrusions targeting governments, think tanks, and critical infrastructure.",
   campaigns: [
@@ -342,7 +343,7 @@ const apt29 = {
           iocs: [
             { type: "File", indicator: "BoomBox.dll", description: "APT29 obfuscated downloader delivered inside NativeZone ISO — uses XOR-encoded strings and downloads VaporRage" },
             { type: "File", indicator: "setup.lnk", description: "LNK shortcut inside mounted ISO — auto-executes BoomBox.dll via rundll32 when ISO is mounted/browsed" },
-            { type: "SHA-256", indicator: "d035d394a82ae1e44b4ba3a6ec7e3185", description: "BoomBox downloader MD5 — identified by Volexity in NOBELIUM USAID campaign analysis" },
+            { type: "SHA-256", indicator: "d035d394a82ae1e44b4ba3a6ec7e3185", description: "BoomBox downloader hash — identified by Volexity in NOBELIUM USAID campaign analysis (MD5 format, 32 chars)" },
           ],
         },
         {

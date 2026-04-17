@@ -4,6 +4,7 @@ const apt41 = {
   aliases: ["Winnti", "Double Dragon", "Barium", "Earth Baku"],
   origin: "China",
   motivation: "Espionage / Financial",
+  attribution: "Formally Attributed",
   description:
     "APT41 is a Chinese state-sponsored threat actor uniquely conducting both espionage on behalf of Chinese intelligence services and financially motivated cybercrime. Active since at least 2012, targeting healthcare, telecom, technology, and defense sectors globally.",
   campaigns: [

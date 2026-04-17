@@ -7,8 +7,13 @@ import lazarus from '../data/apt/lazarus'
 import sandworm from '../data/apt/sandworm'
 import volttyphoon from '../data/apt/volttyphoon'
 import scatteredspider from '../data/apt/scatteredspider'
+import kimsuky from '../data/apt/kimsuky'
+import blackcat from '../data/apt/blackcat'
+import apt32 from '../data/apt/apt32'
+import transparenttribe from '../data/apt/transparenttribe'
+import sidewinder from '../data/apt/sidewinder'
 
-const allAPTs = [apt29, apt33, apt41, lazarus, sandworm, volttyphoon, scatteredspider]
+const allAPTs = [apt29, apt33, apt41, lazarus, sandworm, volttyphoon, scatteredspider, kimsuky, blackcat, apt32, transparenttribe, sidewinder]
 
 // Build flat searchable index at module level (runs once)
 const INDEX = []

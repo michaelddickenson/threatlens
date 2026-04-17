@@ -4,6 +4,7 @@ const lazarus = {
   aliases: ["Hidden Cobra", "Guardians of Peace", "APT38", "Zinc"],
   origin: "North Korea",
   motivation: "Financial / Espionage",
+  attribution: "Formally Attributed",
   description:
     "Lazarus Group is a DPRK state-sponsored threat actor attributed to North Korea's Reconnaissance General Bureau. Active since at least 2009, responsible for the Sony Pictures hack, WannaCry ransomware, and over $3 billion in cryptocurrency theft targeting financial institutions and crypto exchanges.",
   campaigns: [

@@ -4,6 +4,7 @@ const apt33 = {
   aliases: ["Elfin", "Refined Kitten", "HOLMIUM", "Magnallium"],
   origin: "Iran",
   motivation: "Espionage / Destructive",
+  attribution: "Community Consensus",
   description:
     "APT33 is an Iranian state-sponsored threat actor attributed to Iran's IRGC or MOIS intelligence services. Active since at least 2013, APT33 is known for destructive wiper attacks against Gulf state energy companies and sustained espionage campaigns targeting aviation, aerospace, and defense sectors globally.",
   campaigns: [

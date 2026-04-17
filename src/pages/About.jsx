@@ -276,18 +276,95 @@ export default function About() {
 
       <div className="w-full h-px bg-gray-800 mb-12" />
 
+      {/* Attribution Disclaimer */}
+      <div className="mb-12">
+        <p className="text-xs text-gray-600 uppercase tracking-widest mb-2">// attribution</p>
+        <h3 className="text-xl font-bold text-white tracking-widest mb-6">A NOTE ON ATTRIBUTION</h3>
+
+        <div className="border border-orange-900/60 bg-orange-950/20 rounded-lg p-6 mb-6">
+          <div className="text-orange-400 font-bold text-sm mb-3">Attribution is probabilistic, not certain</div>
+          <p className="text-gray-300 text-sm leading-relaxed mb-4">
+            Cyberattack attribution is inherently difficult. Unlike physical attacks, digital operations can be
+            staged through third-party infrastructure, techniques can be copied across groups, and adversaries
+            actively work to mislead investigators through false-flag operations and plausible deniability.
+            When ThreatLens states that a threat actor "is attributed to" a nation-state, this reflects the
+            published assessments of multiple independent intelligence organizations — it does not represent
+            legal proof of state responsibility, and reasonable analysts sometimes disagree.
+          </p>
+          <p className="text-gray-400 text-sm leading-relaxed">
+            Attribution confidence varies significantly across groups. Some actors have been formally named in
+            government indictments with specific individuals charged; others are identified only through
+            overlapping TTPs, infrastructure reuse, and victimology patterns that suggest a common origin.
+            ThreatLens uses three confidence tiers to reflect this spectrum:
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="border border-green-800 bg-green-950/20 rounded-lg p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xs border border-green-800 text-green-400 bg-green-950/30 px-2 py-1 rounded font-bold">
+                Formally Attributed
+              </span>
+            </div>
+            <p className="text-gray-400 text-xs leading-relaxed">
+              A government has publicly attributed the activity to a specific nation-state actor — typically
+              via formal indictment, official advisory, or diplomatic statement. Examples: the US DOJ
+              indictment of APT29 / SVR officers; formal Five Eyes attribution of Sandworm to GRU Unit 74455;
+              DOJ charges against APT41 members by name.
+            </p>
+          </div>
+          <div className="border border-yellow-800 bg-yellow-950/20 rounded-lg p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xs border border-yellow-800 text-yellow-400 bg-yellow-950/30 px-2 py-1 rounded font-bold">
+                Community Consensus
+              </span>
+            </div>
+            <p className="text-gray-400 text-xs leading-relaxed">
+              Multiple independent threat intelligence vendors and government bodies have independently
+              reached the same attribution conclusion based on overlapping technical indicators, TTPs,
+              infrastructure patterns, and targeting. No formal government indictment exists, but the
+              attribution is widely accepted across the security community. Examples: APT33 to IRGC; Volt
+              Typhoon to PRC MSS; Transparent Tribe to Pakistan-linked actors.
+            </p>
+          </div>
+          <div className="border border-orange-800 bg-orange-950/20 rounded-lg p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xs border border-orange-800 text-orange-400 bg-orange-950/30 px-2 py-1 rounded font-bold">
+                Assessed
+              </span>
+            </div>
+            <p className="text-gray-400 text-xs leading-relaxed">
+              Attribution is based on circumstantial technical evidence and victimology alignment, but
+              significant uncertainty remains. The origin is an informed assessment, not a consensus
+              conclusion. This may reflect a newer group with limited operational history, conflicting
+              vendor assessments, or evidence that could support alternative interpretations. Example:
+              SideWinder's India attribution is widely assumed but not formally confirmed by any government.
+            </p>
+          </div>
+        </div>
+
+        <div className="border border-gray-800 bg-gray-900/50 rounded-lg p-4 text-xs text-gray-500 leading-relaxed">
+          Attribution labels on ThreatLens reflect the state of public knowledge at time of writing.
+          Attribution confidence can increase (e.g., formal indictment) or be revised as new technical
+          evidence emerges. Users should consult primary source reports linked on each campaign page for
+          the most current assessments from the organizations that conducted the original investigation.
+        </div>
+      </div>
+
+      <div className="w-full h-px bg-gray-800 mb-12" />
+
       {/* Tech Stack */}
       <div className="mb-12">
         <p className="text-xs text-gray-600 uppercase tracking-widest mb-2">// built with</p>
         <h3 className="text-xl font-bold text-white tracking-widest mb-6">TECH STACK</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-            { name: 'React 19', desc: 'UI framework', color: 'text-blue-400 border-blue-900' },
-            { name: 'Vite 7', desc: 'Build tool', color: 'text-purple-400 border-purple-900' },
-            { name: 'Tailwind CSS 3', desc: 'Utility styling', color: 'text-teal-400 border-teal-900' },
-            { name: 'React Router 7', desc: 'SPA routing', color: 'text-orange-400 border-orange-900' },
+            { name: 'React 19.2', desc: 'UI framework', color: 'text-blue-400 border-blue-900' },
+            { name: 'Vite 7.3', desc: 'Build tool', color: 'text-purple-400 border-purple-900' },
+            { name: 'Tailwind CSS 3.4', desc: 'Utility styling', color: 'text-teal-400 border-teal-900' },
+            { name: 'React Router 7.13', desc: 'SPA routing', color: 'text-orange-400 border-orange-900' },
             { name: 'GitHub Pages', desc: 'Deployment', color: 'text-green-400 border-green-900' },
-            { name: 'HashRouter', desc: 'SPA 404 handling', color: 'text-yellow-400 border-yellow-900' },
+            { name: 'BrowserRouter', desc: 'basename=/threatlens', color: 'text-yellow-400 border-yellow-900' },
             { name: 'MITRE ATT&CK', desc: 'TTP taxonomy', color: 'text-red-400 border-red-900' },
             { name: 'Open Source', desc: 'MIT licensed', color: 'text-gray-400 border-gray-700' },
           ].map(({ name, desc, color }) => (

@@ -7,10 +7,21 @@ import lazarus from '../data/apt/lazarus'
 import sandworm from '../data/apt/sandworm'
 import volttyphoon from '../data/apt/volttyphoon'
 import scatteredspider from '../data/apt/scatteredspider'
+import kimsuky from '../data/apt/kimsuky'
+import blackcat from '../data/apt/blackcat'
+import apt32 from '../data/apt/apt32'
+import transparenttribe from '../data/apt/transparenttribe'
+import sidewinder from '../data/apt/sidewinder'
 
-const allAPTs = [apt29, apt33, apt41, lazarus, sandworm, volttyphoon, scatteredspider]
+const allAPTs = [apt29, apt33, apt41, lazarus, sandworm, volttyphoon, scatteredspider, kimsuky, blackcat, apt32, transparenttribe, sidewinder]
 
-const COUNTRIES = ['All', 'Russia', 'Iran', 'China', 'North Korea', 'Western']
+const COUNTRIES = ['All', 'Russia', 'Iran', 'China', 'North Korea', 'Western', 'Vietnam', 'Pakistan', 'India']
+
+const ATTRIBUTION_STYLES = {
+  'Formally Attributed': 'border-green-800 text-green-400 bg-green-950/30',
+  'Community Consensus': 'border-yellow-800 text-yellow-400 bg-yellow-950/30',
+  'Assessed':            'border-orange-800 text-orange-400 bg-orange-950/30',
+}
 
 export default function APTLibrary() {
   const [countryFilter, setCountryFilter] = useState('All')
@@ -139,10 +150,17 @@ export default function APTLibrary() {
                 </div>
                 <p className="text-xs text-yellow-500 mb-3">{apt.aliases.join(' · ')}</p>
                 <p className="text-gray-400 text-sm mb-4 leading-relaxed">{apt.description.slice(0, 120)}...</p>
-                <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center justify-between mb-2">
                   <span className="text-xs text-gray-600">{apt.campaigns.length} campaign{apt.campaigns.length !== 1 ? 's' : ''}</span>
                   <span className="text-xs text-red-400 border border-red-900 px-2 py-1 rounded">{apt.motivation}</span>
                 </div>
+                {apt.attribution && (
+                  <div className="mb-3">
+                    <span className={`text-xs border px-2 py-1 rounded ${ATTRIBUTION_STYLES[apt.attribution] ?? 'border-gray-700 text-gray-400'}`}>
+                      {apt.attribution}
+                    </span>
+                  </div>
+                )}
 
                 {/* Campaign links */}
                 <div className="space-y-2 mb-3">

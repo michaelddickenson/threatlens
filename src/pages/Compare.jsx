@@ -7,8 +7,13 @@ import lazarus from '../data/apt/lazarus'
 import sandworm from '../data/apt/sandworm'
 import volttyphoon from '../data/apt/volttyphoon'
 import scatteredspider from '../data/apt/scatteredspider'
+import kimsuky from '../data/apt/kimsuky'
+import blackcat from '../data/apt/blackcat'
+import apt32 from '../data/apt/apt32'
+import transparenttribe from '../data/apt/transparenttribe'
+import sidewinder from '../data/apt/sidewinder'
 
-const allAPTs = { apt29, apt33, apt41, lazarus, sandworm, volttyphoon, scatteredspider }
+const allAPTs = { apt29, apt33, apt41, lazarus, sandworm, volttyphoon, scatteredspider, kimsuky, blackcat, apt32, transparenttribe, sidewinder }
 
 const MITRE_TACTICS = [
   'Reconnaissance', 'Resource Development', 'Initial Access', 'Execution',
@@ -51,6 +56,9 @@ const ORIGIN_COLORS = {
   'Iran':        'border-orange-800 text-orange-400',
   'North Korea': 'border-blue-800 text-blue-400',
   'Western':     'border-pink-800 text-pink-400',
+  'Vietnam':     'border-teal-800 text-teal-400',
+  'Pakistan':    'border-emerald-800 text-emerald-400',
+  'India':       'border-amber-800 text-amber-400',
 }
 
 export default function Compare() {

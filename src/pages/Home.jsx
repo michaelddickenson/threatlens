@@ -7,8 +7,13 @@ import lazarus from '../data/apt/lazarus'
 import sandworm from '../data/apt/sandworm'
 import volttyphoon from '../data/apt/volttyphoon'
 import scatteredspider from '../data/apt/scatteredspider'
+import kimsuky from '../data/apt/kimsuky'
+import blackcat from '../data/apt/blackcat'
+import apt32 from '../data/apt/apt32'
+import transparenttribe from '../data/apt/transparenttribe'
+import sidewinder from '../data/apt/sidewinder'
 
-const allAPTs = [apt29, apt33, apt41, lazarus, sandworm, volttyphoon, scatteredspider]
+const allAPTs = [apt29, apt33, apt41, lazarus, sandworm, volttyphoon, scatteredspider, kimsuky, blackcat, apt32, transparenttribe, sidewinder]
 
 const totalCampaigns = allAPTs.reduce((sum, apt) => sum + apt.campaigns.length, 0)
 const totalTechniques = allAPTs.reduce((sum, apt) =>
@@ -57,12 +62,12 @@ function useTypewriter(words, typingSpeed = 80, deletingSpeed = 40, pauseTime = 
 
 // Hardcoded order: 6 most recently added campaigns, newest first
 const FEATURED_ORDER = [
-  { aptId: 'scatteredspider', campaignId: 'mgm-ransomware-2023' },
-  { aptId: 'volttyphoon',     campaignId: 'us-critical-infrastructure-2021' },
-  { aptId: 'sandworm',        campaignId: 'notpetya-2017' },
-  { aptId: 'apt29',           campaignId: 'usaid-phishing-2021' },
-  { aptId: 'apt33',           campaignId: 'aviation-defense-2017' },
-  { aptId: 'apt41',           campaignId: 'cuckoo-bees-2022' },
+  { aptId: 'blackcat',          campaignId: 'healthcare-ransomware-2023' },
+  { aptId: 'scatteredspider',   campaignId: 'mgm-ransomware-2023' },
+  { aptId: 'kimsuky',           campaignId: 'academic-targeting-2021' },
+  { aptId: 'sidewinder',        campaignId: 'pakistan-govt-targeting-2021' },
+  { aptId: 'transparenttribe',  campaignId: 'indian-military-targeting-2022' },
+  { aptId: 'apt32',             campaignId: 'automotive-espionage-2019' },
 ]
 
 const aptById = Object.fromEntries(allAPTs.map(a => [a.id, a]))

@@ -4,6 +4,7 @@ const volttyphoon = {
   aliases: ["Bronze Silhouette", "Vanguard Panda", "Dev-0391", "UNC3236"],
   origin: "China",
   motivation: "Espionage / Pre-positioning",
+  attribution: "Community Consensus",
   description:
     "Volt Typhoon is a PRC state-sponsored threat actor characterized by living-off-the-land (LOLBin) techniques — using only built-in Windows utilities with zero custom malware. Active since at least 2021, their primary mission is pre-positioning within US critical infrastructure for potential disruption in a future US-China conflict scenario.",
   campaigns: [
@@ -128,8 +129,8 @@ const volttyphoon = {
         {
           id: "credential-access",
           name: "NTDS.dit Credential Dump via ntdsutil",
-          ttp: "T1003.001",
-          ttpName: "OS Credential Dumping: LSASS Memory",
+          ttp: "T1003.003",
+          ttpName: "OS Credential Dumping: NTDS",
           phase: "Credential Access",
           attacker: {
             summary:

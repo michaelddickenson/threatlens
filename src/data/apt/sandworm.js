@@ -4,6 +4,7 @@ const sandworm = {
   aliases: ["Voodoo Bear", "Iron Viking", "TeleBots", "Iridium", "Seashell Blizzard"],
   origin: "Russia",
   motivation: "Destructive / Espionage",
+  attribution: "Formally Attributed",
   description:
     "Sandworm (GRU Unit 74455) is Russia's most destructive cyber threat actor, responsible for the NotPetya wiper ($10B+ in damages), BlackEnergy attacks on Ukraine's power grid, and Olympic Destroyer. Unlike espionage-focused groups, Sandworm prioritizes destruction over stealth.",
   campaigns: [
@@ -29,7 +30,7 @@ const sandworm = {
         },
         capability: {
           malware: ["NotPetya wiper", "EternalBlue (NSA exploit)", "Mimikatz credential harvester", "Petya MBR overwriter", "Custom M.E.Doc backdoor"],
-          ttps: ["T1566.001 — Supply chain spearphishing (M.E.Doc)", "T1059.001 — PowerShell staging", "T1210 — EternalBlue SMB exploit", "T1543.003 — Windows Service install", "T1485 — MBR/MFT destruction"],
+          ttps: ["T1195.002 — Supply Chain Compromise: Software Supply Chain (M.E.Doc)", "T1059.001 — PowerShell staging", "T1210 — EternalBlue SMB exploit", "T1543.003 — Windows Service install", "T1485 — MBR/MFT destruction"],
           sophistication: "Nation-State — weaponized NSA tooling, software supply chain compromise, autonomous self-spreading wiper with zero recovery capability",
         },
         infrastructure: {
@@ -47,8 +48,8 @@ const sandworm = {
         {
           id: "supply-chain",
           name: "M.E.Doc Supply Chain Compromise",
-          ttp: "T1566.001",
-          ttpName: "Phishing: Spearphishing Attachment",
+          ttp: "T1195.002",
+          ttpName: "Supply Chain Compromise: Software Supply Chain",
           phase: "Initial Access",
           attacker: {
             summary:

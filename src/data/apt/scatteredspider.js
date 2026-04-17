@@ -4,6 +4,7 @@ const scatteredspider = {
   aliases: ["UNC3944", "Muddled Libra", "Star Fraud", "0ktapus", "Octo Tempest"],
   origin: "Western",
   motivation: "Financial",
+  attribution: "Formally Attributed",
   description:
     "Scattered Spider (UNC3944) is an English-speaking cybercriminal collective whose 2023 MGM Resorts attack caused $100M+ in losses using no technical exploits — only vishing, MFA fatigue, and legitimate cloud tools. Members are primarily US and UK nationals aged 19-22, exceptionally skilled at social engineering Okta and Azure AD environments.",
   campaigns: [
@@ -17,7 +18,7 @@ const scatteredspider = {
       sources: [
         { title: "CISA Advisory AA23-320A — Scattered Spider", publisher: "CISA / FBI", url: "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-320a" },
         { title: "#StopRansomware: ALPHV Blackcat (Update)", publisher: "CISA / FBI / HHS", url: "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-353a" },
-        { title: "Scattered Spider: The Comm Behind the MGM Hack", publisher: "CrowdStrike Intelligence", url: "https://www.crowdstrike.com/blog/scattered-spider-attempts-to-blur-the-lines-between-threat-actor-groups/" },
+        { title: "Scattered Spider Attempts to Blur the Lines Between Threat Actor Groups", publisher: "CrowdStrike Intelligence", url: "https://www.crowdstrike.com/blog/scattered-spider-attempts-to-blur-the-lines-between-threat-actor-groups/" },
         { title: "UNC3944: SMS Phishing and SIM Swapping Leads to Ransomware", publisher: "Mandiant", url: "https://www.mandiant.com/resources/blog/unc3944-financially-motivated-targeted-attack" },
       ],
       diamondModel: {
