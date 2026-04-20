@@ -1,19 +1,6 @@
 import { useParams, Link } from 'react-router-dom'
 import { useState, useRef } from 'react'
-import apt29 from '../data/apt/apt29'
-import apt33 from '../data/apt/apt33'
-import apt41 from '../data/apt/apt41'
-import lazarus from '../data/apt/lazarus'
-import sandworm from '../data/apt/sandworm'
-import volttyphoon from '../data/apt/volttyphoon'
-import scatteredspider from '../data/apt/scatteredspider'
-import kimsuky from '../data/apt/kimsuky'
-import blackcat from '../data/apt/blackcat'
-import apt32 from '../data/apt/apt32'
-import transparenttribe from '../data/apt/transparenttribe'
-import sidewinder from '../data/apt/sidewinder'
-
-const allAPTs = { apt29, apt33, apt41, lazarus, sandworm, volttyphoon, scatteredspider, kimsuky, blackcat, apt32, transparenttribe, sidewinder }
+import { getAPTById } from '../data/index'
 
 const PHASE_STYLES = {
   'Initial Access':       { idle: 'border-yellow-800 text-yellow-400 bg-yellow-950/30 hover:bg-yellow-900/40',     active: 'border-yellow-400 text-yellow-200 bg-yellow-900/50' },
@@ -72,7 +59,7 @@ export default function Campaign() {
   const [activeStage, setActiveStage] = useState(0)
   const contentRef = useRef(null)
 
-  const apt = allAPTs[aptId]
+  const apt = getAPTById(aptId)
   const campaign = apt?.campaigns.find(c => c.id === campaignId)
 
   if (!apt || !campaign) {

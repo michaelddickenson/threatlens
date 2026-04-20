@@ -1,21 +1,9 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import apt29 from '../data/apt/apt29'
-import apt33 from '../data/apt/apt33'
-import apt41 from '../data/apt/apt41'
-import lazarus from '../data/apt/lazarus'
-import sandworm from '../data/apt/sandworm'
-import volttyphoon from '../data/apt/volttyphoon'
-import scatteredspider from '../data/apt/scatteredspider'
-import kimsuky from '../data/apt/kimsuky'
-import blackcat from '../data/apt/blackcat'
-import apt32 from '../data/apt/apt32'
-import transparenttribe from '../data/apt/transparenttribe'
-import sidewinder from '../data/apt/sidewinder'
+import { ALL_APTS, getAllCountries } from '../data/index'
 
-const allAPTs = [apt29, apt33, apt41, lazarus, sandworm, volttyphoon, scatteredspider, kimsuky, blackcat, apt32, transparenttribe, sidewinder]
-
-const COUNTRIES = ['All', 'Russia', 'Iran', 'China', 'North Korea', 'Western', 'Vietnam', 'Pakistan', 'India']
+const allAPTs = ALL_APTS
+const COUNTRIES = ['All', ...getAllCountries()]
 
 const ATTRIBUTION_STYLES = {
   'Formally Attributed': 'border-green-800 text-green-400 bg-green-950/30',

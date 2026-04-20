@@ -5,6 +5,7 @@ import Campaign from './pages/Campaign'
 import Search from './pages/Search'
 import Compare from './pages/Compare'
 import About from './pages/About'
+import Heatmap from './pages/Heatmap'
 import Navbar from './components/Navbar'
 
 export default function App() {
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="/compare" element={<Compare />} />
         <Route path="/compare/:aptId1/:aptId2" element={<Compare />} />
         <Route path="/about" element={<About />} />
+        <Route path="/heatmap" element={<Heatmap />} />
       </Routes>
     </div>
   )

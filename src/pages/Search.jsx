@@ -1,19 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import apt29 from '../data/apt/apt29'
-import apt33 from '../data/apt/apt33'
-import apt41 from '../data/apt/apt41'
-import lazarus from '../data/apt/lazarus'
-import sandworm from '../data/apt/sandworm'
-import volttyphoon from '../data/apt/volttyphoon'
-import scatteredspider from '../data/apt/scatteredspider'
-import kimsuky from '../data/apt/kimsuky'
-import blackcat from '../data/apt/blackcat'
-import apt32 from '../data/apt/apt32'
-import transparenttribe from '../data/apt/transparenttribe'
-import sidewinder from '../data/apt/sidewinder'
+import { ALL_APTS } from '../data/index'
 
-const allAPTs = [apt29, apt33, apt41, lazarus, sandworm, volttyphoon, scatteredspider, kimsuky, blackcat, apt32, transparenttribe, sidewinder]
+const allAPTs = ALL_APTS
 
 // Build flat searchable index at module level (runs once)
 const INDEX = []

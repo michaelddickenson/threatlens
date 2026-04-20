@@ -11,6 +11,7 @@ export default function Navbar() {
         <Link to="/apt" className="text-gray-400 hover:text-green-400 transition-colors">APT LIBRARY</Link>
         <Link to="/compare" className="text-gray-400 hover:text-purple-400 transition-colors">COMPARE</Link>
         <Link to="/search" className="text-gray-400 hover:text-green-400 transition-colors">SEARCH</Link>
+        <Link to="/heatmap" className="text-gray-400 hover:text-green-400 transition-colors">HEATMAP</Link>
         <Link to="/about" className="text-gray-400 hover:text-green-400 transition-colors">ABOUT</Link>
       </div>
     </nav>
