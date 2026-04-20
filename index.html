@@ -5,8 +5,15 @@
     <link rel="icon" type="image/svg+xml" href="/threatlens/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ThreatLens</title>
-    <script type="module" crossorigin src="/threatlens/assets/index-DIXEPA9z.js"></script>
-    <link rel="stylesheet" crossorigin href="/threatlens/assets/index-DCGkCA2c.css">
+    <script>
+      var redirect = sessionStorage.getItem('redirect');
+      if (redirect && redirect !== '/') {
+        sessionStorage.removeItem('redirect');
+        window.history.replaceState(null, null, '/threatlens' + redirect);
+      }
+    </script>
+    <script type="module" crossorigin src="/threatlens/assets/index-O-CAHdvC.js"></script>
+    <link rel="stylesheet" crossorigin href="/threatlens/assets/index-B-1gqBln.css">
   </head>
   <body>
     <div id="root"></div>
